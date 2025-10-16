@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Container, Link, Paper, Alert } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const darkTheme = createTheme({
   palette: {
@@ -29,13 +31,34 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
+    }
+
+    try {
+      const response = await api.post("/register", {
+        name,
+        email,
+        password,
+      });
+
+      const token = response.data.token;
+
+      localStorage.setItem("token", token);
+      navigate("/login");
+
+    } catch (err) {
+      if (err.response) {
+        setError(err.response.data.message || "Register. Periksa email/password.");
+      } else {
+        setError("Tidak dapat terhubung ke server.");
+      }
     }
 
     console.log("Register:", { name, email, password });

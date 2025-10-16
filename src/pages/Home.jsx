@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   Container,
@@ -12,31 +10,31 @@ import {
   Box,
   Tabs,
   Tab,
-  TextField,
-  InputAdornment,
-  IconButton,
-  Badge,
   ThemeProvider,
   createTheme,
   CssBaseline,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import MenuDetails from "../components/MenuDetails";
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import heroBg from "../assets/header-2.svg";
+import api from "../../services/api";
 
 const theme = createTheme({
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", sans-serif',
   },
   palette: {
     mode: "light",
     primary: {
-      main: "#0d14d1ff",
+      main: "#040870ff",
       light: "#041f6aff",
-      dark: "#2205a0ff",
+      dark: "#040c66ff",
     },
     background: {
-      default: "#fafafa",
+      default: "#ecf0f7ff",
       paper: "#ffffff",
     },
   },
@@ -55,109 +53,44 @@ const theme = createTheme({
   },
 });
 
-const menuItems = [
-  {
-    id: 1,
-    name: "Nasi Goreng Special",
-    description: "Fried rice with chicken, egg, and vegetables",
-    price: 30000,
-    category: "foods",
-    emoji: "🍚",
-  },
-  {
-    id: 2,
-    name: "Martabak Manis",
-    description: "Sweet pancake with chocolate and cheese",
-    price: 35000,
-    category: "snack",
-    emoji: "🥞",
-  },
-  {
-    id: 3,
-    name: "Ayam Geprek",
-    description: "Crispy fried chicken with sambal",
-    price: 28000,
-    category: "foods",
-    emoji: "🍗",
-  },
-  {
-    id: 4,
-    name: "Es Teh Manis",
-    description: "Sweet iced tea, refreshing drink",
-    price: 8000,
-    category: "beverages",
-    emoji: "🧋",
-  },
-  {
-    id: 5,
-    name: "Pisang Goreng",
-    description: "Crispy fried banana with cheese",
-    price: 15000,
-    category: "snack",
-    emoji: "🍌",
-  },
-  {
-    id: 6,
-    name: "Mie Goreng",
-    description: "Stir-fried noodles with vegetables",
-    price: 25000,
-    category: "foods",
-    emoji: "🍜",
-  },
-  {
-    id: 7,
-    name: "Kopi Susu",
-    description: "Indonesian milk coffee",
-    price: 12000,
-    category: "beverages",
-    emoji: "☕",
-  },
-  {
-    id: 8,
-    name: "Risoles Mayo",
-    description: "Fried spring rolls with mayo filling",
-    price: 18000,
-    category: "snack",
-    emoji: "🥟",
-  },
-  {
-    id: 9,
-    name: "Soto Ayam",
-    description: "Traditional chicken soup with rice",
-    price: 27000,
-    category: "foods",
-    emoji: "🍲",
-  },
-  {
-    id: 10,
-    name: "Jus Alpukat",
-    description: "Fresh avocado juice with chocolate",
-    price: 15000,
-    category: "beverages",
-    emoji: "🥑",
-  },
-  {
-    id: 11,
-    name: "Cireng",
-    description: "Fried tapioca crackers with peanut sauce",
-    price: 12000,
-    category: "snack",
-    emoji: "🍢",
-  },
-  {
-    id: 12,
-    name: "Bakso",
-    description: "Meatball soup with noodles",
-    price: 23000,
-    category: "foods",
-    emoji: "🍝",
-  },
-];
-
 export default function CanteenHomepage() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const [menuItems, setMenuItems] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [openChart, setOpenChart] = useState(false);
+  const [close, setClose] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const response = await api.get("/menus");
+        setMenuItems(response.data.data || response.data);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data menu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMenus();
+
+    const interval = setInterval(fetchMenus, 5000); // fetch ulang setiap 5 detik
+
+    return () => clearInterval(interval);
+  }, []);
 
   const categories = ["all", "snack", "foods", "beverages"];
   const categoryLabels = ["All Menu", "Snack", "Foods", "Beverages"];
@@ -168,6 +101,14 @@ export default function CanteenHomepage() {
 
   const handleAddToCart = () => {
     setCartCount((prev) => prev + 1);
+  };
+
+  const handleAuthNav = (type) => {
+    if (type === "login") {
+      navigate("/login");
+    } else if (type === "register") {
+      navigate("/register");
+    }
   };
 
   const filteredItems = menuItems.filter((item) => {
@@ -191,77 +132,19 @@ export default function CanteenHomepage() {
           flexGrow: 1,
           minHeight: "100vh",
           backgroundColor: "background.default",
-          width: "100%",
-          overflowX:"hidden",
-          alignItems: "center"
+          width: "100vw",
+          overflow: "hidden",
+          alignItems: "center",
         }}
       >
-        {/* App Bar */}
-        <AppBar
-          position="fixed"
-          elevation={1}
-          sx={{ backgroundColor: "background.paper" }}
-        >
-          <Toolbar sx={{ py: 1 }}>
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{
-                flexGrow: 0,
-                color: "primary.main",
-                fontWeight: 700,
-                mr: 4,
-              }}
-            >
-              CanteenTC
-            </Typography>
-
-            <Box sx={{ flexGrow: 1 }} />
-
-            <TextField
-              placeholder="Search menu..."
-              size="small"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              sx={{
-                mr: 3,
-                width: 300,
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "grey.50",
-                  "& fieldset": {
-                    borderColor: "transparent",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "grey.300",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "grey.500" }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <IconButton sx={{ mr: 2 }}>
-              <Badge badgeContent={cartCount} color="primary">
-                <ShoppingCartIcon sx={{ color: "grey.700" }} />
-              </Badge>
-            </IconButton>
-
-            <Button variant="outlined" sx={{ mr: 1.5 }}>
-              Login
-            </Button>
-            <Button variant="contained" color="primary">
-              Register
-            </Button>
-          </Toolbar>
-        </AppBar>
+        <Navbar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          cartCount={cartCount}
+          openCart={openChart}
+          setOpenCart={setOpenChart}
+          handleAuthNav={handleAuthNav}
+        />
 
         {/* Hero Section */}
         <Box
@@ -271,27 +154,31 @@ export default function CanteenHomepage() {
             mt: 8,
             borderBottom: 1,
             borderColor: "divider",
+            backgroundImage: `url("${heroBg}")`,
+            backgroundSize: "cover",
+            minHeight: "280px"
           }}
         >
-          <Container maxWidth="lg" >
+          <Container maxWidth="lg">
             <Typography
               variant="h1"
               align="center"
               sx={{
-                fontWeight: 300,
+                fontWeight: 800,
+                fontFamily: '"Poppins", sans-serif',
                 fontSize: { xs: "3rem", md: "4.5rem" },
-                color: "text.primary",
+                color: "transparent",
                 letterSpacing: "-0.02em",
               }}
             >
-              Canteen TC
+              C28 Canteen
             </Typography>
             <Typography
               variant="h6"
               align="center"
               sx={{
                 mt: 2,
-                color: "text.secondary",
+                color: "transparent",
                 fontWeight: 400,
               }}
             >
@@ -301,9 +188,9 @@ export default function CanteenHomepage() {
         </Box>
 
         {/* Menu Section */}
-        <Container maxWidth="xl" sx={{ mt: 5, mb: 8}}>
+        <Container maxWidth="xl" sx={{ mt: 5, mb: 8 }}>
           {/* Category Tabs */}
-          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 4}}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 4 }}>
             <Tabs
               value={selectedTab}
               onChange={handleTabChange}
@@ -331,7 +218,7 @@ export default function CanteenHomepage() {
           {/* Menu Grid - 4 cards per row */}
           <Grid
             container
-            spacing={3}
+            spacing={6}
             justifyContent="center" // 🔹 supaya grid item rata tengah
             alignItems="stretch"
             sx={{
@@ -342,6 +229,10 @@ export default function CanteenHomepage() {
             {filteredItems.map((item) => (
               <Grid item xs={12} sm={6} md={3} key={item.id}>
                 <Card
+                  onClick={() => {
+                    setOpen(true);
+                    setSelectedItem(item);
+                  }}
                   elevation={2}
                   sx={{
                     height: "100%",
@@ -356,16 +247,19 @@ export default function CanteenHomepage() {
                   }}
                 >
                   <CardMedia
+                    component="img"
+                    image={item.image_url}
+                    alt={item.name}
                     sx={{
                       height: 180,
-                      backgroundColor: "grey.100",
+                      backgroundColor: "white",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: "4rem",
                     }}
                   >
-                    {item.emoji}
+                    {/* {item.emoji} */}
                   </CardMedia>
                   <CardContent
                     sx={{
@@ -373,6 +267,8 @@ export default function CanteenHomepage() {
                       display: "flex",
                       flexDirection: "column",
                       p: 2.5,
+                      // bgcolor: "#FFF8E1",
+                      bgcolor: "background.paper",
                     }}
                   >
                     <Typography
@@ -414,7 +310,10 @@ export default function CanteenHomepage() {
                         variant="contained"
                         size="small"
                         startIcon={<AddIcon />}
-                        onClick={handleAddToCart}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart();
+                        }}
                         sx={{
                           px: 2,
                         }}
@@ -427,7 +326,13 @@ export default function CanteenHomepage() {
               </Grid>
             ))}
           </Grid>
-
+          {selectedItem && (
+            <MenuDetails
+              open={open}
+              onClose={() => setOpen(false)}
+              item={selectedItem}
+            />
+          )}
           {filteredItems.length === 0 && (
             <Box sx={{ textAlign: "center", py: 8 }}>
               <Typography variant="h6" color="text.secondary">
@@ -437,6 +342,7 @@ export default function CanteenHomepage() {
           )}
         </Container>
       </Box>
+      <Footer />
     </ThemeProvider>
   );
 }
