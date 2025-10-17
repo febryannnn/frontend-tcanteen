@@ -43,7 +43,11 @@ export default function Footer() {
 
   const socialMedia = [
     { icon: <FacebookIcon />, href: "https://facebook.com", label: "Facebook" },
-    { icon: <InstagramIcon />, href: "https://instagram.com", label: "Instagram" },
+    {
+      icon: <InstagramIcon />,
+      href: "https://instagram.com",
+      label: "Instagram",
+    },
     { icon: <TwitterIcon />, href: "https://twitter.com", label: "Twitter" },
   ];
 
@@ -51,14 +55,14 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: "primary.main",
+        background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
         color: "white",
         pt: 6,
         pb: 3,
         mt: "auto",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Grid container spacing={4}>
           {/* Brand Section */}
           <Grid item xs={12} md={4}>
@@ -83,10 +87,10 @@ export default function Footer() {
                   lineHeight: 1.7,
                 }}
               >
-                Your favorite destination for delicious meals and refreshing beverages. 
-                We serve quality food with love and care.
+                Your favorite destination for delicious meals and refreshing
+                beverages. We serve quality food with love and care.
               </Typography>
-              
+
               {/* Social Media */}
               <Stack direction="row" spacing={1}>
                 {socialMedia.map((social) => (
@@ -197,20 +201,23 @@ export default function Footer() {
             <Stack spacing={2}>
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <LocationOnIcon sx={{ mr: 1, fontSize: 20, mt: 0.3 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ opacity: 0.9, lineHeight: 1.6 }}
+                >
                   Jl. Raya Kampus, Surabaya
                   <br />
                   East Java, Indonesia
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <PhoneIcon sx={{ mr: 1, fontSize: 20 }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
                   +62 812-3456-7890
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <EmailIcon sx={{ mr: 1, fontSize: 20 }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -248,7 +255,7 @@ export default function Footer() {
           >
             © {currentYear} C28 Canteen. All rights reserved.
           </Typography>
-          
+
           <Stack
             direction="row"
             spacing={3}
