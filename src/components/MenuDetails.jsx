@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,39 +10,26 @@ import {
   Paper,
   TextField,
   Button,
-  CardMedia
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import CloseIcon from '@mui/icons-material/Close';
+  CardMedia,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default function OrderDetailDialog({ open, onClose }) {
-  const menuItem = {
-    id: 1,
-    name: 'Nasi Goreng Special',
-    description:
-      'Delicious fried rice cooked with premium ingredients including tender chicken, fresh vegetables, and a perfectly fried egg on top. Served with crackers and pickles.',
-    price: 30000,
-    category: 'foods',
-    emoji: '🍚',
-    rating: 4.8,
-    reviews: 126,
-    availability: 'Available',
-    preparationTime: '15-20 minutes',
-  };
+export default function OrderDetailDialog({ open, onClose, item }) {
+  console.log(item);
 
   const [quantity, setQuantity] = useState(1);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const handleIncrement = () => setQuantity((q) => q + 1);
+  const handleDecrement = () => quantity > 1 && setQuantity((q) => q - 1);
+  const formatPrice = (price) => `Rp ${price.toLocaleString("id-ID")}`;
 
-  const handleIncrement = () => setQuantity(q => q + 1);
-  const handleDecrement = () => quantity > 1 && setQuantity(q => q - 1);
-  const formatPrice = price => `Rp ${price.toLocaleString('id-ID')}`;
-
-  const totalPrice = menuItem.price * quantity;
+  const totalPrice = item.price * quantity;
 
   return (
     <Dialog
@@ -52,84 +39,119 @@ export default function OrderDetailDialog({ open, onClose }) {
       fullWidth
       scroll="paper"
       PaperProps={{
-        sx: { borderRadius: 1, overflow: 'hidden' },
+        sx: { borderRadius: 1, overflow: "hidden" },
       }}
     >
-      <DialogContent sx={{ p: 0 ,overflow: 'hidden'}}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, height: { md: 500 },  }}>
+      <DialogContent sx={{ p: 0, overflow: "hidden" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            height: { md: 500 },
+          }}
+        >
           {/* LEFT SECTION – IMAGE */}
           <Box
             sx={{
-              width: { xs: '100%', md: '45%' },
-              backgroundColor: 'grey.100',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              fontSize: '10rem',
+              width: { xs: "100%", md: "45%" },
+              backgroundColor: "grey.100",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              fontSize: "10rem",
             }}
           >
-            {menuItem.emoji}
-            <IconButton
-              onClick={() => setIsFavorite(!isFavorite)}
+            <CardMedia
+              component="img"
+              image={item.image_url}
+              alt={item.name}
               sx={{
-                position: 'absolute',
-                top: 12,
-                right: 12,
-                backgroundColor: 'white',
-                '&:hover': { backgroundColor: 'grey.100' },
+                height: '100%',
+                objectFit: "cover",
               }}
-            >
-              {isFavorite ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteBorderIcon />}
-            </IconButton>
+            />
 
             <IconButton
               onClick={onClose}
               sx={{
-                position: 'absolute',
+                position: "absolute",
                 top: 12,
                 left: 12,
-                backgroundColor: 'white',
-                '&:hover': { backgroundColor: 'grey.100' },
+                backgroundColor: "white",
+                "&:hover": { backgroundColor: "grey.100" },
               }}
             >
               <CloseIcon />
             </IconButton>
+            <IconButton
+              onClick={() => setIsFavorite(!isFavorite)}
+              sx={{
+                position: "absolute",
+                top: 12,
+                right: 12,
+                backgroundColor: "white",
+                "&:hover": { backgroundColor: "grey.100" },
+              }}
+            >
+              {isFavorite ? (
+                <FavoriteIcon sx={{ color: "red" }} />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
+            </IconButton>
           </Box>
 
           {/* RIGHT SECTION – DETAILS */}
-          <Box sx={{ flex: 1, p: 4, overflowY: 'auto' }}>
+          <Box sx={{ flex: 1, p: 4, overflowY: "auto" }}>
             {/* HEADER */}
             <Box sx={{ mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                {menuItem.name}
+                {item.name}
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                <Typography variant="body2" sx={{ color: 'warning.main', fontWeight: 600 }}>
-                  ⭐ {menuItem.rating}
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ color: "warning.main", fontWeight: 600 }}
+                >
+                  ⭐ 4.5/5.0
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  ({menuItem.reviews} reviews)
+                  ({item.reviews} reviews)
                 </Typography>
                 <Divider orientation="vertical" flexItem />
                 <Typography variant="body2" color="text.secondary">
-                  🕐 {menuItem.preparationTime}
+                  🕐 10-15 Minutes
                 </Typography>
               </Box>
               <Chip
-                label={menuItem.availability}
+                label="available"
                 color="success"
                 size="small"
                 sx={{ mt: 1, fontWeight: 600 }}
               />
             </Box>
 
-            <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 2 }}>
-              {formatPrice(menuItem.price)}
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, color: "primary.main", mb: 2 }}
+            >
+              {formatPrice(item.price)}
             </Typography>
 
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
-              {menuItem.description}
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 3, lineHeight: 1.6 }}
+            >
+              Nasi goreng is a popular Indonesian fried rice dish made with
+              cooked rice stir-fried in oil, soy sauce, garlic, shallots, and
+              chili. It’s often mixed with ingredients like eggs, chicken,
+              shrimp, or vegetables, and served with toppings such as fried
+              shallots, cucumber, and crackers. It’s flavorful, slightly sweet,
+              and smoky — a favorite comfort food across Indonesia.
             </Typography>
 
             {/* QUANTITY */}
@@ -139,9 +161,9 @@ export default function OrderDetailDialog({ open, onClose }) {
             <Paper
               variant="outlined"
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                width: 'fit-content',
+                display: "flex",
+                alignItems: "center",
+                width: "fit-content",
                 borderRadius: 2,
                 mb: 3,
               }}
@@ -167,21 +189,31 @@ export default function OrderDetailDialog({ open, onClose }) {
               rows={2}
               placeholder="Add any special requests..."
               value={notes}
-              onChange={e => setNotes(e.target.value)}
+              onChange={(e) => setNotes(e.target.value)}
               variant="outlined"
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: 'grey.50',
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "grey.50",
                 },
               }}
             />
 
             {/* TOTAL */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 3,
+              }}
+            >
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Total
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 700, color: "primary.main" }}
+              >
                 {formatPrice(totalPrice)}
               </Typography>
             </Box>
@@ -191,9 +223,9 @@ export default function OrderDetailDialog({ open, onClose }) {
               variant="contained"
               fullWidth
               startIcon={<ShoppingCartIcon />}
-              sx={{ mt: 3, py: 1.2, fontWeight: 600, fontSize: '1rem' }}
+              sx={{ mt: 3, py: 1.2, fontWeight: 600, fontSize: "1rem" }}
               onClick={() => {
-                alert(`${menuItem.name} (${quantity}) added to cart`);
+                alert(`${item.name} (${quantity}) added to cart`);
                 onClose();
               }}
             >
