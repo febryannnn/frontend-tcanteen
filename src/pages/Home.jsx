@@ -21,6 +21,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import heroBg from "../assets/header-2.svg";
 import api from "../../services/api";
+import InfiniteCarousel from "../components/Promo";
 
 const theme = createTheme({
   typography: {
@@ -29,7 +30,7 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#040870ff",
+      main: "#010321ff",
       light: "#041f6aff",
       dark: "#040c66ff",
     },
@@ -186,6 +187,8 @@ export default function CanteenHomepage() {
             </Typography>
           </Container>
         </Box>
+
+        <InfiniteCarousel />
 
         {/* Menu Section */}
         <Container maxWidth="xl" sx={{ mt: 5, mb: 8 }}>

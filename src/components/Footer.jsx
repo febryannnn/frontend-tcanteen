@@ -1,75 +1,304 @@
 import React from "react";
-import { Box, Container, Typography, Grid, Link, Divider } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Link,
+  IconButton,
+  Divider,
+  Stack,
+} from "@mui/material";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    quickLinks: [
+      { label: "Home", href: "/" },
+      { label: "Menu", href: "/menu" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact", href: "/contact" },
+    ],
+    services: [
+      { label: "Online Order", href: "/order" },
+      { label: "Catering", href: "/catering" },
+      { label: "Reservation", href: "/reservation" },
+      { label: "Gift Cards", href: "/gift-cards" },
+    ],
+    legal: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Cookie Policy", href: "/cookies" },
+      { label: "FAQ", href: "/faq" },
+    ],
+  };
+
+  const socialMedia = [
+    { icon: <FacebookIcon />, href: "https://facebook.com", label: "Facebook" },
+    { icon: <InstagramIcon />, href: "https://instagram.com", label: "Instagram" },
+    { icon: <TwitterIcon />, href: "https://twitter.com", label: "Twitter" },
+  ];
+
   return (
     <Box
+      component="footer"
       sx={{
         backgroundColor: "primary.main",
         color: "white",
-        mt: 8,
-        py: 5,
+        pt: 6,
+        pb: 3,
+        mt: "auto",
       }}
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          {/* Brand */}
+          {/* Brand Section */}
           <Grid item xs={12} md={4}>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 800, mb: 1, letterSpacing: "-0.02em" }}
-            >
-              CanteenTC
-            </Typography>
-            <Typography variant="body2" sx={{ color: "grey.200", lineHeight: 1.8 }}>
-              Platform pemesanan makanan dan minuman cepat di kampus. Pesan,
-              bayar, dan nikmati tanpa antre!
-            </Typography>
-          </Grid>
-
-          {/* Navigation */}
-          <Grid item xs={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              Navigasi
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8 }}>
-              <Link href="/" underline="hover" color="inherit">
-                Beranda
-              </Link>
-              <Link href="/menu" underline="hover" color="inherit">
-                Menu
-              </Link>
-              <Link href="/about" underline="hover" color="inherit">
-                Tentang Kami
-              </Link>
-              <Link href="/contact" underline="hover" color="inherit">
-                Kontak
-              </Link>
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <RestaurantMenuIcon sx={{ fontSize: 40, mr: 1 }} />
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    fontFamily: '"Poppins", sans-serif',
+                  }}
+                >
+                  C28 Canteen
+                </Typography>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  mb: 3,
+                  opacity: 0.9,
+                  lineHeight: 1.7,
+                }}
+              >
+                Your favorite destination for delicious meals and refreshing beverages. 
+                We serve quality food with love and care.
+              </Typography>
+              
+              {/* Social Media */}
+              <Stack direction="row" spacing={1}>
+                {socialMedia.map((social) => (
+                  <IconButton
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      color: "white",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                        transform: "translateY(-3px)",
+                      },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    {social.icon}
+                  </IconButton>
+                ))}
+              </Stack>
             </Box>
           </Grid>
 
-          {/* Contact */}
-          <Grid item xs={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              Kontak
+          {/* Quick Links */}
+          <Grid item xs={12} sm={4} md={2}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                fontSize: "1rem",
+              }}
+            >
+              Quick Links
             </Typography>
-            <Typography variant="body2" sx={{ color: "grey.200", lineHeight: 1.8 }}>
-              Email: <Link color="inherit" href="mailto:support@canteentc.com">support@canteentc.com</Link>
-              <br />
-              Telepon: +62 812-3456-7890
+            <Stack spacing={1.5}>
+              {footerLinks.quickLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  underline="none"
+                  sx={{
+                    color: "white",
+                    opacity: 0.8,
+                    fontSize: "0.9rem",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      opacity: 1,
+                      paddingLeft: 1,
+                    },
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </Stack>
+          </Grid>
+
+          {/* Services */}
+          <Grid item xs={12} sm={4} md={2}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                fontSize: "1rem",
+              }}
+            >
+              Services
             </Typography>
+            <Stack spacing={1.5}>
+              {footerLinks.services.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  underline="none"
+                  sx={{
+                    color: "white",
+                    opacity: 0.8,
+                    fontSize: "0.9rem",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      opacity: 1,
+                      paddingLeft: 1,
+                    },
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </Stack>
+          </Grid>
+
+          {/* Contact Info */}
+          <Grid item xs={12} sm={4} md={4}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                fontSize: "1rem",
+              }}
+            >
+              Contact Us
+            </Typography>
+            <Stack spacing={2}>
+              <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                <LocationOnIcon sx={{ mr: 1, fontSize: 20, mt: 0.3 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
+                  Jl. Raya Kampus, Surabaya
+                  <br />
+                  East Java, Indonesia
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <PhoneIcon sx={{ mr: 1, fontSize: 20 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  +62 812-3456-7890
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <EmailIcon sx={{ mr: 1, fontSize: 20 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  info@c28canteen.com
+                </Typography>
+              </Box>
+            </Stack>
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.2)" }} />
+        {/* Divider */}
+        <Divider
+          sx={{
+            my: 4,
+            borderColor: "rgba(255, 255, 255, 0.2)",
+          }}
+        />
 
-        <Typography
-          variant="body2"
-          align="center"
-          sx={{ color: "grey.300", mt: 1 }}
+        {/* Bottom Section */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+          }}
         >
-          © {new Date().getFullYear()} CanteenTC. All rights reserved.
-        </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.8,
+              textAlign: { xs: "center", sm: "left" },
+            }}
+          >
+            © {currentYear} C28 Canteen. All rights reserved.
+          </Typography>
+          
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            {footerLinks.legal.map((link, index) => (
+              <React.Fragment key={link.label}>
+                <Link
+                  href={link.href}
+                  underline="none"
+                  sx={{
+                    color: "white",
+                    opacity: 0.8,
+                    fontSize: "0.85rem",
+                    transition: "opacity 0.2s ease",
+                    "&:hover": {
+                      opacity: 1,
+                    },
+                  }}
+                >
+                  {link.label}
+                </Link>
+                {index < footerLinks.legal.length - 1 && (
+                  <Typography
+                    component="span"
+                    sx={{ opacity: 0.5, display: { xs: "none", sm: "inline" } }}
+                  >
+                    |
+                  </Typography>
+                )}
+              </React.Fragment>
+            ))}
+          </Stack>
+        </Box>
+
+        {/* Made with love section */}
+        <Box sx={{ textAlign: "center", mt: 3 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.7,
+              fontSize: "0.85rem",
+            }}
+          >
+            Made with ❤️ for food lovers
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );
