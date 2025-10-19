@@ -29,8 +29,15 @@ export default function MenuCard() {
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [favorites, setFavorites] = useState({});
+  const [cartCount, setCartCount] = useState(0);
+  const [formData, setFormData] = useState({
+    id: "",
+    quantitiy: 0,
+  });
+  const [cartItems, setCartItems] = useState({});
 
   const navigate = useNavigate();
+  let menuCartCount = 0;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -56,9 +63,7 @@ export default function MenuCard() {
   }, []);
 
   const categories = ["All Menu", "Snack", "Main Course", "Beverage"];
-  // const categoryLabels = ["All Menu", "Snack", "Foods", "Beverages"];
 
-  // Mapping kategori ke label Indonesia
   const categoryMapping = {
     snack: "Snack",
     foods: "Makanan",
@@ -68,9 +73,41 @@ export default function MenuCard() {
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+  console.log("Token:", localStorage.getItem("token"));
+  const token = localStorage.getItem("token");
 
-  const handleAddToCart = () => {
-    setCartCount((prev) => prev + 1);
+  const handleAddToCart = async (item_id) => {
+    try {
+
+      let currentQuantity = cartItems[item_id] || 0;
+      let newQuantity = currentQuantity + 1;
+
+      setCartItems((prev) => ({
+        ...prev,
+        [item_id]: newQuantity,
+      }));
+
+      console.log("Sending:", { menu_id: item_id, quantity: newQuantity });
+
+      // Kirim ke backend
+      await api.patch(
+        `/carts`,
+        {
+          menu_id: item_id,
+          quantity: newQuantity,
+        },
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+
+      // Update badge cart count total
+      setCartCount((prev) => prev + 1);
+    } catch (err) {
+      console.error("Error adding to cart:", err.response?.data || err);
+    }
   };
 
   const handleToggleFavorite = (itemId, event) => {
@@ -167,7 +204,7 @@ export default function MenuCard() {
                       objectFit: "cover",
                     }}
                   />
-                  
+
                   {/* Favorite Button */}
                   <IconButton
                     onClick={(e) => handleToggleFavorite(item.id, e)}
@@ -284,34 +321,39 @@ export default function MenuCard() {
 
                   {/* Add Button */}
                   <Box sx={{ display: "flex", gap: 1 }}>
-                  <Button
-                    variant="contained"
-                    
-                    startIcon={<AddIcon />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart();
-                    }}
-                    sx={{
-                      mt: "auto",
-                    }}
-                  >
-                    Add to cart
-                  </Button>
-                  <Button
-                    variant="contained"
-                    
-                    startIcon={<AddIcon />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart();
-                    }}
-                    sx={{
-                      mt: "auto",
-                    }}
-                  >
-                    Buy now
-                  </Button>
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        menuCartCount++;
+                        handleAddToCart(item.id);
+                      }}
+                      sx={{
+                        mt: "auto",
+                        borderColor: "#2c96c1ff",
+                        border: 1,
+                        background: "transparent",
+                        color: "black",
+                      }}
+                    >
+                      Add to cart
+                    </Button>
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // handleAddToCart();
+                      }}
+                      sx={{
+                        mt: "auto",
+                        background:
+                          "linear-gradient(45deg, #050163ff, #2c96c1ff)",
+                      }}
+                    >
+                      Buy now
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>

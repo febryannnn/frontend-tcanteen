@@ -150,7 +150,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
                 fontFamily: '"Poppins", sans-serif',
               }}
             >
-              C28 Canteen
+              TCanteen
             </Typography>
           </Box>
         )}
@@ -201,7 +201,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
               variant="caption"
               sx={{ opacity: 0.8, fontSize: "0.75rem" }}
             >
-              admin@c28canteen.com
+              admin@tcanteen.com
             </Typography>
           </Box>
         )}

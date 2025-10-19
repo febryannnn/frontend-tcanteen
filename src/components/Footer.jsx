@@ -76,7 +76,7 @@ export default function Footer() {
                     fontFamily: '"Poppins", sans-serif',
                   }}
                 >
-                  C28 Canteen
+                  TCanteen
                 </Typography>
               </Box>
               <Typography
@@ -221,7 +221,7 @@ export default function Footer() {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <EmailIcon sx={{ mr: 1, fontSize: 20 }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  info@c28canteen.com
+                  info@tcanteen.com
                 </Typography>
               </Box>
             </Stack>
@@ -253,7 +253,7 @@ export default function Footer() {
               textAlign: { xs: "center", sm: "left" },
             }}
           >
-            © {currentYear} C28 Canteen. All rights reserved.
+            © {currentYear} TCanteen. All rights reserved.
           </Typography>
 
           <Stack

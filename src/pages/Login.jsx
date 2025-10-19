@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Box,
   TextField,
@@ -9,16 +9,19 @@ import {
   Container,
   Link,
   Paper,
+  Alert,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../components/UserContext";
+
 
 const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#0000",
+      main: "#000",
     },
     background: {
       default: "#dbe2edff",
@@ -31,15 +34,17 @@ const lightTheme = createTheme({
 });
 
 export default function LoginPage() {
+  const { setUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
-
+  const [error, setError] = useState(""); // 🔹 Ganti snackbar jadi alert visual
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", { email, password, remember});
+    setError("");
+
     try {
       const response = await api.post("/login", {
         email,
@@ -47,20 +52,27 @@ export default function LoginPage() {
       });
 
       const token = response.data.data.token;
+      // const email_user = response.data.data.user.email;
+      const user = response.data.data.user
+
+      // localStorage.setItem("email", email_user);
       localStorage.setItem("token", token);
-      if (response.data.data.user.role === 'admin') {
+      localStorage.setItem("user", JSON.stringify(user))
+
+      setUser(user)
+
+      if (response.data.data.user.role === "admin") {
         navigate("/dashboard");
-        return;
-      }
-      navigate("/");
-    } catch (err) {
-      if (err.response) {
-        setError(
-          err.response.data.message || "Register. Periksa email/password."
-        );
       } else {
-        setError("Tidak dapat terhubung ke server.");
+        navigate("/");
       }
+    } catch (err) {
+      let message = "Tidak dapat terhubung ke server.";
+      if (err.response) {
+        message =
+          err.response.data.message || "Login gagal. Periksa email/password.";
+      }
+      setError(message);
     }
   };
 
@@ -120,6 +132,13 @@ export default function LoginPage() {
 
             {/* Form */}
             <Box component="form" onSubmit={handleSubmit}>
+              {/* 🔹 Alert Error */}
+              {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
+              )}
+
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1, color: "black" }}>
                   Email
@@ -129,15 +148,20 @@ export default function LoginPage() {
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      bgcolor: "#ffffffff",
-                      fieldset: {
-                        borderColor: "grey.500",
+                      bgcolor: "white",
+                      "& fieldset": {
+                        borderColor: "black",
                       },
                       "&:hover fieldset": {
                         borderColor: "black",
                       },
+                    },
+                    "& input::placeholder": {
+                      color: "gray",
+                      opacity: 1,
                     },
                   }}
                 />
@@ -153,15 +177,20 @@ export default function LoginPage() {
                   placeholder="••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      bgcolor: "#ffffffff",
-                      fieldset: {
-                        borderColor: "grey.500",
+                      bgcolor: "white",
+                      "& fieldset": {
+                        borderColor: "black",
                       },
                       "&:hover fieldset": {
                         borderColor: "black",
                       },
+                    },
+                    "& input::placeholder": {
+                      color: "gray",
+                      opacity: 1,
                     },
                   }}
                 />
@@ -173,7 +202,6 @@ export default function LoginPage() {
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
                     size="small"
-                    color="primary.main"
                   />
                 }
                 label={
@@ -218,8 +246,16 @@ export default function LoginPage() {
                 </Link>
               </Box>
 
-              <Box sx={{ textAlign: "center", mt: 3 }}>
-                <Typography variant="body2" sx={{ color: "grey.400" }}>
+              <Box
+                sx={{
+                  textAlign: "center",
+                  mt: 3,
+                  pt: 3,
+                  borderTop: 1,
+                  borderColor: "grey.800",
+                }}
+              >
+                <Typography variant="body2" sx={{ color: "black" }}>
                   Don't have an account?{" "}
                   <Link
                     href="/register"
@@ -227,9 +263,6 @@ export default function LoginPage() {
                     sx={{
                       color: "black",
                       fontWeight: 500,
-                      "&:hover": {
-                        color: "black",
-                      },
                     }}
                   >
                     Sign up

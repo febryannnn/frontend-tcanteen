@@ -235,10 +235,31 @@ const ScrollingRow = ({ reviews, direction, speed = 30 }) => {
   return (
     <Box
       sx={{
+        position:"relative",
         overflow: "hidden",
         width: "100%",
         py: 1,
+        "&::before, &::after": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          width: "100px",
+          height: "100%",
+          zIndex: 2,
+          pointerEvents: "none",
+        },
+        "&::before": {
+          left: 0,
+          background:
+            "linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0))",
+        },
+        "&::after": {
+          right: 0,
+          background:
+            "linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0))",
+        },
       }}
+      
     >
       <Box
         sx={{

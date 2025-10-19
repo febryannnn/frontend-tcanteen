@@ -48,6 +48,7 @@ export default function OrderDetailDialog({ open, onClose, item }) {
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             height: { md: 500 },
+            overflow: "auto"
           }}
         >
           {/* LEFT SECTION – IMAGE */}
@@ -67,7 +68,7 @@ export default function OrderDetailDialog({ open, onClose, item }) {
               image={item.image_url}
               alt={item.name}
               sx={{
-                height: '100%',
+                height: "100%",
                 objectFit: "cover",
               }}
             />
@@ -103,7 +104,17 @@ export default function OrderDetailDialog({ open, onClose, item }) {
           </Box>
 
           {/* RIGHT SECTION – DETAILS */}
-          <Box sx={{ flex: 1, p: 4, overflowY: "auto" }}>
+          <Box
+            sx={{
+              flex: 1,
+              p: 4,
+              overflowY: "auto",
+              scrollbarWidth: "none", // Firefox
+              "&::-webkit-scrollbar": {
+                display: "none", // Chrome, Edge, Safari
+              },
+            }}
+          >
             {/* HEADER */}
             <Box sx={{ mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 700 }}>

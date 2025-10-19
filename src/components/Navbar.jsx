@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -22,6 +22,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import CartPopup from "./Order";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../components/UserContext";
 
 export default function Navbar({
   searchQuery,
@@ -34,19 +35,29 @@ export default function Navbar({
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [user, setUser] = useState({ name: "User Name", email: "user@email.com" });
+  // const [user, setUser] = useState({ name: "Guest", email: "guest@gmail.com" });
+  const { user, setUser } = useContext(UserContext);
 
   // 🔹 Cek token di localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    const savedUser = localStorage.getItem("user");
+
+    if (token && savedUser) {
+      setUser(JSON.parse(savedUser));
+      setIsLoggedIn(true);
+    } else {
+      setUser({ name: "Guest", email: "Not logged in" });
+      setIsLoggedIn(false);
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setUser({ name: "Guest", email: "Not logged in" });
     setIsLoggedIn(false);
     setShowProfileCard(false);
-    navigate("/login");
+    // navigate("/login");
   };
 
   const toggleProfileCard = () => {
@@ -74,7 +85,7 @@ export default function Navbar({
           }}
           onClick={() => navigate("/")}
         >
-          CanteenTC
+          TCanteen
         </Typography>
 
         <Box sx={{ flexGrow: 1 }} />

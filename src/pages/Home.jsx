@@ -23,7 +23,7 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#131759ff",
+      main: "#000000ff",
       light: "#041f6aff",
       dark: "#040c66ff",
     },
@@ -59,6 +59,7 @@ export default function CanteenHomepage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
   const [openChart, setOpenChart] = useState(false);
+  const [loading, setLoading] = useState(0);
 
   const categories = ["all", "snack", "foods", "beverages"];
 
@@ -117,7 +118,7 @@ export default function CanteenHomepage() {
                 letterSpacing: "-0.02em",
               }}
             >
-              C28 Canteen
+              TC Canteen
             </Typography>
             <Typography
               variant="h6"
@@ -134,8 +135,8 @@ export default function CanteenHomepage() {
         </Box>
 
         <InfiniteCarousel />
-        <MenuCard/>
-        <CustomerReviews/>
+        <MenuCard />
+        <CustomerReviews />
       </Box>
       <Footer />
     </ThemeProvider>
