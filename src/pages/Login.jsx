@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -15,7 +15,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
-
 
 const lightTheme = createTheme({
   palette: {
@@ -34,12 +33,36 @@ const lightTheme = createTheme({
 });
 
 export default function LoginPage() {
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState(""); // 🔹 Ganti snackbar jadi alert visual
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      console.log("tes");
+      setUser(JSON.parse(storedUser));
+      // console.log(user)
+      // if (user.role === "admin") {
+      //   navigate("/dashboardmenu")
+      // }
+    } else {
+      console.log("oioioi");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === "admin") {
+        // console.log("ye admin")
+        navigate("/dashboardmenu")
+      }
+      // console.log(user.role)
+    }
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,16 +76,16 @@ export default function LoginPage() {
 
       const token = response.data.data.token;
       // const email_user = response.data.data.user.email;
-      const user = response.data.data.user
+      const user = response.data.data.user;
 
       // localStorage.setItem("email", email_user);
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("user", JSON.stringify(user));
 
-      setUser(user)
+      setUser(user);
 
       if (response.data.data.user.role === "admin") {
-        navigate("/dashboard");
+        navigate("/dashboardmenu");
       } else {
         navigate("/");
       }

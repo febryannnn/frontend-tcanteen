@@ -4,8 +4,8 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Order from "./pages/Order";
 import AdminDashboard from "./pages/Dashboard";
-import Dashboard2 from "./pages/Dashboard2";
 import { UserProvider } from "./components/UserContext";
+import MenuPage from "./pages/MenuAdmin"
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard2 />} />
+          <Route path="/dashboardmenu" element={<MenuPage />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>

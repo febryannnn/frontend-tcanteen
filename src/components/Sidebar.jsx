@@ -62,10 +62,12 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
       key: "menu",
       title: "Menu",
       icon: <MenuBookIcon />,
-      path: "/menu",
+      path: "/dashboardmenu",
       submenu: [
-        { title: "All Menu", path: "/menu/all", icon: <RestaurantMenuIcon /> },
-        { title: "Add Menu", path: "/menu/add", icon: <MenuBookIcon /> },
+        { title: "All Menu", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
+        { title: "Snack", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
+        { title: "Main Course", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
+        { title: "Beverage", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
       ],
     },
     {
@@ -125,7 +127,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "black",
+        background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
         color: "white",
       }}
     >
@@ -147,7 +149,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
               variant="h6"
               sx={{
                 fontWeight: 800,
-                fontFamily: '"Poppins", sans-serif',
+                fontFamily: '"Inter", sans-serif',
               }}
             >
               TCanteen
@@ -188,6 +190,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
             backgroundColor: "rgba(255, 255, 255, 0.2)",
             fontSize: collapsed ? "1rem" : "1.5rem",
             fontWeight: 700,
+            fontFamily: '"Inter", sans-serif',
           }}
         >
           A
