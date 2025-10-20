@@ -6,6 +6,8 @@ import Order from "./pages/Order";
 import AdminDashboard from "./pages/Dashboard";
 import { UserProvider } from "./components/UserContext";
 import MenuPage from "./pages/MenuAdmin"
+import OrderPageAdmin from "./pages/OrderAdmin";
+import OrderListPage from "./pages/Order";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />} />
           <Route path="/dashboardmenu" element={<MenuPage />} />
+          <Route path="/dashboard/order" element={<OrderPageAdmin />} />
+          <Route path="/order" element={<OrderListPage />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>

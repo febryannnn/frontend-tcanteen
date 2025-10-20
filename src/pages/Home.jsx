@@ -48,18 +48,21 @@ const theme = createTheme({
 });
 
 export default function CanteenHomepage() {
+
   const navigate = useNavigate();
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     // navigate("/login");
+  //   } 
+  // }, [navigate]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
   const [openChart, setOpenChart] = useState(false);
   const [loading, setLoading] = useState(0);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const categories = ["all", "snack", "foods", "beverages"];
 

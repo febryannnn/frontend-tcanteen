@@ -40,13 +40,6 @@ export default function MenuCard() {
   let menuCartCount = 0;
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  useEffect(() => {
     const fetchMenus = async () => {
       try {
         const response = await api.get("/menus");
@@ -78,7 +71,6 @@ export default function MenuCard() {
 
   const handleAddToCart = async (item_id) => {
     try {
-
       let currentQuantity = cartItems[item_id] || 0;
       let newQuantity = currentQuantity + 1;
 

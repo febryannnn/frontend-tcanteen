@@ -1,19 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect} from 'react';
 import {
-  Typography,
-  Button,
-  Container,
-  Grid,
+  Box,
   Card,
   CardContent,
-  Box,
-  Tabs,
-  Tab,
+  Typography,
+  Grid,
   Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Table,
   TableBody,
   TableCell,
@@ -21,355 +13,266 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PendingIcon from "@mui/icons-material/Pending";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import CancelIcon from "@mui/icons-material/Cancel";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import api from "../../services/api";
-import { useNavigate } from "react-router-dom";
+  Avatar,
+  Container,
+  AppBar,
+  Toolbar,
+  IconButton,
+  InputBase,
+  Badge
+} from '@mui/material';
+import {
+  Search,
+  Notifications,
+  ShoppingCart,
+  AccessTime,
+  CheckCircle,
+  Restaurant
+} from '@mui/icons-material';
+import api from "../../services/api"
 
-export default function OrderComponent() {
-  const [orders, setOrders] = useState([]);
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await api.get("/orders");
-        setOrders(response.data.data || response.data);
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-      }
-    };
-    fetchOrders();
-
-    const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const orderStatuses = ["All", "Pending", "Processing", "Completed", "Cancelled"];
-
-  const handleTabChange = (event, newValue) => {
-    setSelectedTab(newValue);
-  };
-
-  const handleViewDetail = (order) => {
-    setSelectedOrder(order);
-    setOpenDialog(true);
-  };
-
-  const handleUpdateStatus = async (orderId, newStatus) => {
-    try {
-      const token = localStorage.getItem("token");
-      await api.patch(
-        `/orders/${orderId}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      
-      const response = await api.get("/orders");
-      setOrders(response.data.data || response.data);
-      setOpenDialog(false);
-    } catch (err) {
-      console.error("Error updating order:", err);
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return <PendingIcon />;
-      case "processing":
-        return <LocalShippingIcon />;
-      case "completed":
-        return <CheckCircleIcon />;
-      case "cancelled":
-        return <CancelIcon />;
-      default:
-        return <ShoppingCartIcon />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "warning";
-      case "processing":
-        return "info";
-      case "completed":
-        return "success";
-      case "cancelled":
-        return "error";
-      default:
-        return "default";
-    }
-  };
-
-  const filteredOrders = orders.filter((order) => {
-    if (selectedTab === 0) return true;
-    return order.status?.toLowerCase() === orderStatuses[selectedTab].toLowerCase();
+const Dashboard = () => {
+  const [orderStats] = useState({
+    pending: { count: 12, change: '+3', color: '#ff9800' },
+    processing: { count: 8, change: '+2', color: '#2196f3' },
+    completed: { count: 45, change: '+15', color: '#4caf50' }
   });
 
-  const formatPrice = (price) => {
-    return `Rp ${price?.toLocaleString("id-ID") || 0}`;
-  };
+  const [menuItems, setMenuItems] = useState([])
+  const token = localStorage.getItem("token")
+  console.log(token)
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  useEffect(() => {
+    const fetchMenu =  async () => {
+      try {
+        const res = await api.get("/orders",{
+          headers: {
+          Authorization: `bearer ${token}`,
+        },
+        });
+        console.log("yeyeye berhasil")
+        console.log(res)
+        
+      } catch (error) {
+        console.log(error)
+        console.log("yah gagal")
+      }
+    }
+    fetchMenu()
+  }, []);
 
-  return (
-    <Container maxWidth="xl" sx={{ mt: 8, mb: 8 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          Order Management
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Kelola semua pesanan pelanggan
-        </Typography>
-      </Box>
+  const [orders] = useState({
+    pending: [
+      { id: '#ORD001', food: 'Nasi Goreng Special', qty: 2, customer: 'Ahmad Rizki', time: '10:30', price: 'Rp 50.000' },
+      { id: '#ORD002', food: 'Mie Ayam Bakso', qty: 1, customer: 'Siti Aminah', time: '10:35', price: 'Rp 25.000' },
+      { id: '#ORD003', food: 'Ayam Geprek + Es Teh', qty: 3, customer: 'Budi Santoso', time: '10:40', price: 'Rp 75.000' },
+      { id: '#ORD004', food: 'Soto Ayam', qty: 1, customer: 'Dewi Lestari', time: '10:42', price: 'Rp 20.000' }
+    ],
+    processing: [
+      { id: '#ORD005', food: 'Rendang + Nasi Putih', qty: 2, customer: 'Eko Prasetyo', time: '10:15', price: 'Rp 80.000' },
+      { id: '#ORD006', food: 'Gado-gado', qty: 1, customer: 'Fitri Handayani', time: '10:20', price: 'Rp 18.000' },
+      { id: '#ORD007', food: 'Bakso Urat Jumbo', qty: 2, customer: 'Hendra Wijaya', time: '10:25', price: 'Rp 60.000' }
+    ],
+    completed: [
+      { id: '#ORD008', food: 'Nasi Padang', qty: 1, customer: 'Rina Susanti', time: '09:50', price: 'Rp 35.000' },
+      { id: '#ORD009', food: 'Sate Ayam 20 Tusuk', qty: 1, customer: 'Joko Widodo', time: '09:45', price: 'Rp 45.000' },
+      { id: '#ORD010', food: 'Es Campur + Pisang Goreng', qty: 2, customer: 'Maya Sari', time: '09:40', price: 'Rp 30.000' },
+      { id: '#ORD011', food: 'Rawon Daging', qty: 1, customer: 'Agus Salim', time: '09:35', price: 'Rp 28.000' }
+    ]
+  });
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 4 }}>
-        <Tabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          sx={{
-            "& .MuiTab-root": {
-              textTransform: "none",
-              fontSize: "1rem",
-              fontWeight: 500,
-              minWidth: 120,
-            },
-          }}
-        >
-          {orderStatuses.map((status, index) => (
-            <Tab key={index} label={status} />
-          ))}
-        </Tabs>
-      </Box>
-
-      <Grid container spacing={3}>
-        {filteredOrders.map((order) => (
-          <Grid item xs={12} sm={6} md={4} key={order.id}>
-            <Card
-              elevation={2}
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: 4,
-                },
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    #{order.order_number || order.id}
-                  </Typography>
-                  <Chip
-                    icon={getStatusIcon(order.status)}
-                    label={order.status || "Pending"}
-                    color={getStatusColor(order.status)}
-                    size="small"
-                    sx={{ fontWeight: 600 }}
-                  />
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Pelanggan
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {order.customer_name || "Guest"}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Item
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {order.items?.length || 0} item
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Harga
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 700, color: "primary.main" }}
-                  >
-                    {formatPrice(order.total_price)}
-                  </Typography>
-                </Box>
-
-                <Typography variant="caption" color="text.secondary">
-                  {formatDate(order.created_at || new Date())}
-                </Typography>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<VisibilityIcon />}
-                  onClick={() => handleViewDetail(order)}
-                  sx={{ mt: 2 }}
-                >
-                  Lihat Detail
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {filteredOrders.length === 0 && (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <ShoppingCartIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
-            Tidak ada pesanan
-          </Typography>
-        </Box>
-      )}
-
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Detail Pesanan #{selectedOrder?.order_number || selectedOrder?.id}
+  const StatCard = ({ title, count, change, color, icon: Icon }) => (
+    <Card sx={{ height: '100%', boxShadow: 3, borderRadius: 2, width:"100%"}}>
+      <CardContent>
+        <Box sx={{ display: "flex", justifyContent: 'space-between', alignItems: 'flex-start', minWidth:"328px", width:"100%" }}>
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {title}
             </Typography>
-            <Chip
-              icon={getStatusIcon(selectedOrder?.status)}
-              label={selectedOrder?.status || "Pending"}
-              color={getStatusColor(selectedOrder?.status)}
-              sx={{ fontWeight: 600 }}
+            <Typography variant="h3" sx={{ fontWeight: 'bold', my: 1 }}>
+              {count}
+            </Typography>
+            <Chip 
+              label={change} 
+              size="small" 
+              sx={{ 
+                bgcolor: `${color}20`,
+                color: color,
+                fontWeight: 'bold',
+                fontSize: '0.75rem',
+                fontFamily: "Poppins, sans-serif"
+              }} 
             />
           </Box>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-              Informasi Pelanggan
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-              {selectedOrder?.customer_name || "Guest"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {selectedOrder?.customer_phone || "-"}
-            </Typography>
-          </Box>
-
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            Item Pesanan
-          </Typography>
-          <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nama Item</TableCell>
-                  <TableCell align="center">Jumlah</TableCell>
-                  <TableCell align="right">Harga</TableCell>
-                  <TableCell align="right">Subtotal</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedOrder?.items?.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell align="center">{item.quantity}</TableCell>
-                    <TableCell align="right">{formatPrice(item.price)}</TableCell>
-                    <TableCell align="right">
-                      {formatPrice(item.price * item.quantity)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Total
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: "primary.main" }}>
-              {formatPrice(selectedOrder?.total_price)}
-            </Typography>
-          </Box>
-
-          <Typography variant="caption" color="text.secondary">
-            Dibuat: {formatDate(selectedOrder?.created_at || new Date())}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Tutup</Button>
-          {selectedOrder?.status?.toLowerCase() === "pending" && (
-            <>
-              <Button
-                onClick={() => handleUpdateStatus(selectedOrder.id, "Processing")}
-                color="info"
-                variant="contained"
-              >
-                Proses
-              </Button>
-              <Button
-                onClick={() => handleUpdateStatus(selectedOrder.id, "Cancelled")}
-                color="error"
-              >
-                Batalkan
-              </Button>
-            </>
-          )}
-          {selectedOrder?.status?.toLowerCase() === "processing" && (
-            <Button
-              onClick={() => handleUpdateStatus(selectedOrder.id, "Completed")}
-              color="success"
-              variant="contained"
-            >
-              Selesai
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
-    </Container>
+          <Avatar sx={{ bgcolor: `${color}20`, width: 56, height: 56 }}>
+            <Icon sx={{ color: color, fontSize: 30 }} />
+          </Avatar>
+        </Box>
+      </CardContent>
+    </Card>
   );
-}
+
+  const OrderTable = ({ title, orders, status, color }) => (
+    <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Restaurant sx={{ color: color, mr: 1 }} />
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            {title}
+          </Typography>
+          <Chip 
+            label={orders.length} 
+            size="small" 
+            sx={{ ml: 1, bgcolor: `${color}20`, color: color, fontWeight: 'bold' }} 
+          />
+        </Box>
+        <TableContainer>
+          <Table sx={{ tableLayout: 'fixed', width: '100%' }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '12%' }}>Order ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '25%' }}>Makanan</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '8%' }}>Qty</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '20%' }}>Customer</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '15%' }}>Waktu</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5', width: '20%' }}>Harga</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders.map((order, idx) => (
+                <TableRow 
+                  key={idx}
+                  sx={{ '&:hover': { bgcolor: '#fafafa' } }}
+                >
+                  <TableCell sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: color }}>
+                      {order.id}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {order.food}
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={`${order.qty}x`} size="small" />
+                  </TableCell>
+                  <TableCell sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {order.customer}
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AccessTime sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
+                      {order.time}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>{order.price}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Box sx={{ 
+      bgcolor: '#f5f7fa', 
+      minHeight: '100vh', 
+      width: '100%',
+      overflow: 'hidden'
+    }}>
+      <AppBar position="static" sx={{ bgcolor: 'white', boxShadow: 1 }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1, color: 'text.primary', fontWeight: 'bold' }}>
+            Dashboard Order
+          </Typography>
+          <Box sx={{ 
+            display: { xs: 'none', sm: 'flex' }, 
+            alignItems: 'center', 
+            bgcolor: '#f5f5f5', 
+            borderRadius: 2, 
+            px: 2, 
+            py: 0.5, 
+            mr: 2 
+          }}>
+            <Search sx={{ color: 'text.secondary', mr: 1 }} />
+            <InputBase placeholder="Search..." />
+          </Box>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mr: 2, display: { xs: 'none', sm: 'block' } }}>
+            Apr 17, 2023
+          </Typography>
+          <IconButton>
+            <Badge badgeContent={4} color="error">
+              <Notifications />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <Box sx={{ px: 3, py: 3, width: '100%' }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>
+          Overview
+        </Typography>
+
+        <Grid container spacing={3} sx={{ mb: 4, width:"100%", flex:1}}>
+          <Grid item xs={12} md={4}>
+            <StatCard
+              title="Order Belum Diproses"
+              count={orderStats.pending.count}
+              change={orderStats.pending.change}
+              color={orderStats.pending.color}
+              icon={ShoppingCart}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <StatCard
+              title="Order Sedang Diproses"
+              count={orderStats.processing.count}
+              change={orderStats.processing.change}
+              color={orderStats.processing.color}
+              icon={AccessTime}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <StatCard
+              title="Order Selesai"
+              count={orderStats.completed.count}
+              change={orderStats.completed.change}
+              color={orderStats.completed.color}
+              icon={CheckCircle}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <OrderTable
+              title="Order Belum Diprosess"
+              orders={orders.pending}
+              status="pending"
+              color="#ff9800"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <OrderTable
+              title="Order Sedang Diproses"
+              orders={orders.processing}
+              status="processing"
+              color="#2196f3"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <OrderTable
+              title="Order Selesai"
+              orders={orders.completed}
+              status="completed"
+              color="#4caf50"
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
+  );
+};
+
+export default Dashboard;

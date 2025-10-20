@@ -54,15 +54,15 @@ export default function LoginPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      if (user.role === "admin") {
-        // console.log("ye admin")
-        navigate("/dashboardmenu")
-      }
-      // console.log(user.role)
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     if (user.role === "admin") {
+  //       // console.log("ye admin")
+  //       navigate("/dashboardmenu")
+  //     }
+  //     // console.log(user.role)
+  //   }
+  // }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

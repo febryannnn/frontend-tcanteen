@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
-import CartPopup from "./Order";
+import CartPopup from "./Cart";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
 
@@ -184,14 +184,14 @@ export default function Navbar({
                   <Button
                     fullWidth
                     variant="outlined"
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/order")}
                     sx={{
                       mb: 1,
                       borderRadius: "10px",
                       textTransform: "none",
                     }}
                   >
-                    View Profile
+                    View Order
                   </Button>
 
                   <Divider sx={{ my: 1 }} />

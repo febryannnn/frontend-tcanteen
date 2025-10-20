@@ -104,7 +104,7 @@ export default function OrderDetailDialog({
       const data = new FormData();
       data.append("image", formData.file);
 
-      const res = await api.post(`/menus/image/${formData.id}`, data, {
+      const res = await api.post(`admin/menus/image/${formData.id}`, data, {
         headers: {
           Authorization: `bearer ${token}`,
         },

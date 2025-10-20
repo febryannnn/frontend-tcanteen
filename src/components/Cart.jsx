@@ -19,7 +19,7 @@ export default function CartPopup({ open, onClose }) {
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState([]);
   const [cartItems, setCartItems] = useState({});
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!open) return;
@@ -98,7 +98,7 @@ export default function CartPopup({ open, onClose }) {
     try {
       setCartItems((prev) => ({
         ...prev,
-        [item_id]: newQuantity
+        [item_id]: newQuantity,
       }));
 
       await api.patch(
@@ -116,9 +116,27 @@ export default function CartPopup({ open, onClose }) {
 
       setMenuItems((prev) => prev.filter((item) => item.id !== item_id));
       setCartCount((prev) => prev + 1);
-
     } catch (err) {
       console.error("Error adding to cart:", err.response?.data || err);
+    }
+  };
+
+  const createOrder = async () => {
+    try {
+      const res = await api.post(
+        "/orders",
+        {}, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log("yeyeye", res.data);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      console.log("yah gagal");
     }
   };
 
@@ -225,8 +243,7 @@ export default function CartPopup({ open, onClose }) {
                           } else {
                             handleUpdateCart(item.id, item.pivot.quantity - 1);
                           }
-                        }
-                        }
+                        }}
                         value="minus"
                       >
                         -
@@ -273,7 +290,7 @@ export default function CartPopup({ open, onClose }) {
               sx={{
                 background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
               }}
-              onClick={() => alert("Lanjut ke checkout")}
+              onClick={() => createOrder()}
             >
               Pay Now
             </Button>

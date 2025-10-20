@@ -42,6 +42,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
 
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed);
+
   };
 
   const handleSubmenuToggle = (key) => {
@@ -74,9 +75,9 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
       key: "order",
       title: "Order",
       icon: <ShoppingCartIcon />,
-      path: "/order",
+      path: "/dashboard/order",
       submenu: [
-        { title: "New Orders", path: "/order/new", icon: <ShoppingCartIcon /> },
+        { title: "New Orders", path: "/dashboard/order", icon: <ShoppingCartIcon /> },
         { title: "Order History", path: "/order/history", icon: <ReceiptIcon /> },
       ],
     },
@@ -117,6 +118,8 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
       navigate(item.path);
       if (isMobile) {
         onClose();
+        console.log("hello")
+        
       }
     }
   };
@@ -124,11 +127,12 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
   const drawerContent = (
     <Box
       sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
-        color: "white",
+      height: "100vh", // pastikan tinggi sesuai viewport
+      display: "flex",
+      flexDirection: "column",
+      background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
+      color: "white",
+      overflow: "hidden", // sembunyikan overflow horizontal
       }}
     >
       {/* Header */}
@@ -143,8 +147,8 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
         }}
       >
         {!collapsed && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <RestaurantMenuIcon sx={{ fontSize: 36 }} />
+          <Box sx={{ display:"flex",alignItems: "center", gap: 1.5 }}>
+            <RestaurantMenuIcon id="topIconRestaurant" sx={{ fontSize: 36 }} />
             <Typography
               variant="h6"
               sx={{
@@ -156,7 +160,7 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
             </Typography>
           </Box>
         )}
-        {collapsed && <RestaurantMenuIcon sx={{ fontSize: 32 }} />}
+        {collapsed}
         {!isMobile && (
           <IconButton
             onClick={handleToggleCollapse}
