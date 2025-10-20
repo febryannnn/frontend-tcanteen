@@ -50,6 +50,7 @@ const Dashboard = () => {
           Authorization: `bearer ${token}`,
         },
         });
+        setMenuItems(res)
         console.log("yeyeye berhasil")
         console.log(res)
         

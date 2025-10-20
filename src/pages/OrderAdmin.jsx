@@ -1,7 +1,7 @@
 import { React, useContext, useEffect } from "react";
 import MainLayout from "../layout/MainLayoutAdmin";
 import MenuCardAdmin from "../components/MenuAdminCard";
-import Dashboard from "../components/OrderDetails";
+import Dashboard from "../components/OrderDetailsAdmin";
 import { UserContext } from "../components/UserContext";
 import { useNavigate } from "react-router-dom";
 

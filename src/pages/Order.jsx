@@ -33,7 +33,7 @@ import {
   Payment,
   Receipt,
 } from "@mui/icons-material";
-import api from "../../services/api"
+import api from "../../services/api";
 
 const OrderListPage = () => {
   const [orders, setOrders] = useState([]);
@@ -44,14 +44,13 @@ const OrderListPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
-
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
 
   // Fetch orders from API
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await api.get("/orders",{
+        const res = await api.get("/orders", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -61,7 +60,6 @@ const OrderListPage = () => {
       } catch (error) {
         console.error("Error fetching orders:", error);
         // Dummy data
-
       }
     };
 
@@ -165,21 +163,21 @@ const OrderListPage = () => {
     }).format(amount);
   };
 
-  console.log(savedUser)
+  console.log(savedUser);
 
   const formatDate = (dateString) => {
-  const date = new Date(dateString); // buat objek Date
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-};
- 
+    const date = new Date(dateString); // buat objek Date
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+  };
+
   const OrderCard = ({ order }) => {
     const statusConfig = getStatusConfig(order.status);
     const StatusIcon = statusConfig.icon;
-     console.log(order)
+    console.log(order);
 
     return (
       <Fade in={true}>
@@ -190,7 +188,8 @@ const OrderListPage = () => {
             border: "1px solid",
             borderColor: alpha("#000", 0.08),
             transition: "all 0.3s ease",
-            maxWidth: "1440px",
+            maxWidth: "1200px",
+            minWidth:"1000px",
             "&:hover": {
               boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
               transform: "translateY(-4px)",
@@ -217,7 +216,7 @@ const OrderListPage = () => {
                     mb: 0.5,
                   }}
                 >
-                  {order.id}
+                  Order ID: {order.id}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <CalendarToday
@@ -497,8 +496,16 @@ const OrderListPage = () => {
           bgcolor: alpha("#fff", 0.9),
         }}
       >
-        <Box sx={{ maxWidth: 1400, mx: "auto", px: 3, py: 2.5 }}>
-
+        <Box
+          sx={{
+            mx: "auto",
+            px: 3,
+            py: 3,
+            maxWidth: "1200px", // batas lebar
+            width: "100%", // biar responsif
+            overflowX: "hidden",
+          }}
+        >
           {/* Search and Filter */}
           <Grid container spacing={2} alignItems="center">
             {/* <Typography
@@ -580,7 +587,19 @@ const OrderListPage = () => {
       </Box>
 
       {/* Content */}
-      <Box sx={{mx: "auto", px: 3, py: 3,width:"100vw", overflowX:"hidden" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center", // ✅ posisi tengah horizontal
+          mx: "auto",
+          px: 3,
+          py: 3,
+          // maxWidth: "1200px",
+          width: "100vw",
+          overflowX: "hidden",
+        }}
+      >
         <Typography
           variant="body2"
           color="text.secondary"
