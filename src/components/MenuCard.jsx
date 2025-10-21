@@ -13,6 +13,9 @@ import {
   IconButton,
   Chip,
   Rating,
+  CircularProgress,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -21,6 +24,7 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import OrderDetailDialog from "./MenuDetails";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
 
 export default function MenuCard() {
   const [menuItems, setMenuItems] = useState([]);
@@ -35,6 +39,8 @@ export default function MenuCard() {
     quantitiy: 0,
   });
   const [cartItems, setCartItems] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
   let menuCartCount = 0;
@@ -62,6 +68,7 @@ export default function MenuCard() {
     foods: "Makanan",
     beverages: "Minuman",
   };
+  
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -70,6 +77,7 @@ export default function MenuCard() {
   const token = localStorage.getItem("token");
 
   const handleAddToCart = async (item_id) => {
+    setLoading(true);
     try {
       let currentQuantity = cartItems[item_id] || 0;
       let newQuantity = currentQuantity + 1;
@@ -94,10 +102,18 @@ export default function MenuCard() {
           },
         }
       );
+      setLoading(false);
+      setSuccess(true);
+      // setSuccess(false)
+
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 1000);
 
       // Update badge cart count total
       setCartCount((prev) => prev + 1);
     } catch (err) {
+      setLoading(false);
       console.error("Error adding to cart:", err.response?.data || err);
     }
   };
@@ -175,7 +191,7 @@ export default function MenuCard() {
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  width: "clamp(280px, 23vw, 300px)",
+                  width: "clamp(290px, 23vw, 330px)",
                   borderRadius: 1,
                   transition: "all 0.3s ease",
                   cursor: "pointer",
@@ -317,9 +333,8 @@ export default function MenuCard() {
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={(e) => {
-                        e.stopPropagation();
-                        menuCartCount++;
-                        handleAddToCart(item.id);
+                        setOpen(true);
+                        setSelectedItem(item);
                       }}
                       sx={{
                         mt: "auto",
@@ -329,14 +344,15 @@ export default function MenuCard() {
                         color: "black",
                       }}
                     >
-                      Add to cart
+                      View Details
                     </Button>
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        // handleAddToCart();
+                        menuCartCount++;
+                        handleAddToCart(item.id);
                       }}
                       sx={{
                         mt: "auto",
@@ -344,7 +360,7 @@ export default function MenuCard() {
                           "linear-gradient(45deg, #050163ff, #2c96c1ff)",
                       }}
                     >
-                      Buy now
+                      Add to Cart
                     </Button>
                   </Box>
                 </CardContent>
@@ -364,11 +380,89 @@ export default function MenuCard() {
         {filteredItems.length === 0 && (
           <Box sx={{ textAlign: "center", py: 8 }}>
             <Typography variant="h6" color="text.secondary">
-              Tidak ada item yang sesuai dengan pencarian Anda.
+              No Items Found.
             </Typography>
           </Box>
         )}
       </Container>
+      {/* INI BUAT LOADING */}
+      <Dialog
+        open={loading}
+        PaperProps={{
+          sx: {
+            bgcolor: "white",
+            borderRadius: 2,
+            p: 3,
+            minWidth: 300,
+          },
+        }}
+      >
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <CircularProgress size={50} sx={{ color: "black" }} />
+            <Typography
+              variant="body1"
+              sx={{ color: "black", fontWeight: 500 }}
+            >
+              Adding to cart...
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={success}
+        PaperProps={{
+          sx: {
+            bgcolor: "white",
+            borderRadius: 2,
+            p: 3,
+            minWidth: 300,
+          },
+        }}
+      >
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: "50%",
+                bgcolor: "#4caf50",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CheckCircle size={36} color="white" />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "black",
+                fontWeight: 600,
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              Added to Cart Succesfully!
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

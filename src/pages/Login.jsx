@@ -10,11 +10,15 @@ import {
   Link,
   Paper,
   Alert,
+  CircularProgress,
+  Dialog,
+  DialogContent
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
+import { CheckCircle } from "lucide-react";
 
 const lightTheme = createTheme({
   palette: {
@@ -37,7 +41,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
-  const [error, setError] = useState(""); // 🔹 Ganti snackbar jadi alert visual
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,6 +73,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await api.post("/login", {
@@ -75,14 +82,15 @@ export default function LoginPage() {
       });
 
       const token = response.data.data.token;
-      // const email_user = response.data.data.user.email;
       const user = response.data.data.user;
 
-      // localStorage.setItem("email", email_user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
       setUser(user);
+
+      setLoading(false);
+      setSuccess(true);
 
       if (response.data.data.user.role === "admin") {
         navigate("/dashboardmenu");
@@ -95,6 +103,7 @@ export default function LoginPage() {
         message =
           err.response.data.message || "Login gagal. Periksa email/password.";
       }
+      setLoading(false);
       setError(message);
     }
   };
@@ -109,6 +118,7 @@ export default function LoginPage() {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "background.default",
+          fontFamily:"Inter, sans-serif"
         }}
       >
         <Container maxWidth="sm">
@@ -295,6 +305,82 @@ export default function LoginPage() {
             </Box>
           </Paper>
         </Container>
+
+        {/* INI BUAT LOADING */}
+        <Dialog
+          open={loading}
+          PaperProps={{
+            sx: {
+              bgcolor: "white",
+              borderRadius: 2,
+              p: 3,
+              minWidth: 300,
+            },
+          }}
+        >
+          <DialogContent>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <CircularProgress size={50} sx={{ color: "black" }} />
+              <Typography
+                variant="body1"
+                sx={{ color: "black", fontWeight: 500 }}
+              >
+                Signing in...
+              </Typography>
+            </Box>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={success}
+          PaperProps={{
+            sx: {
+              bgcolor: "white",
+              borderRadius: 2,
+              p: 3,
+              minWidth: 300,
+            },
+          }}
+        >
+          <DialogContent>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  bgcolor: "#4caf50",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CheckCircle size={36} color="white" />
+              </Box>
+              <Typography variant="h6" sx={{ color: "black", fontWeight: 600, fontFamily:"Inter, sans-serif" }}>
+                Login Successful!
+              </Typography>
+              <Typography variant="body2" sx={{ color: "grey.600", textAlign: "center" }}>
+                Redirecting to dashboard...
+              </Typography>
+            </Box>
+          </DialogContent>
+        </Dialog>
+
       </Box>
     </ThemeProvider>
   );

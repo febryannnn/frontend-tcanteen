@@ -78,7 +78,6 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
       path: "/dashboard/order",
       submenu: [
         { title: "New Orders", path: "/dashboard/order", icon: <ShoppingCartIcon /> },
-        { title: "Order History", path: "/order/history", icon: <ReceiptIcon /> },
       ],
     },
     {

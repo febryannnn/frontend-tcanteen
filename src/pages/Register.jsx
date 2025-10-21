@@ -1,16 +1,29 @@
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Container, Link, Paper, Alert } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Link,
+  Paper,
+  Alert,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
 
 const darkTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
       main: "#0000",
-      secondary:"#dbe2edff",
+      secondary: "#dbe2edff",
       gradient: "linear-gradient(45deg, #dde7f6ff , #bcd1f0ff)",
     },
     background: {
@@ -30,11 +43,14 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -49,13 +65,17 @@ export default function RegisterPage() {
       });
 
       const token = response.data.token;
+      setLoading(false);
+      setSuccess(true);
 
       localStorage.setItem("token", token);
       navigate("/login");
-
     } catch (err) {
+      setLoading(false);
       if (err.response) {
-        setError(err.response.data.message || "Register. Periksa email/password.");
+        setError(
+          err.response.data.message || "Register. Periksa email/password."
+        );
       } else {
         setError("Tidak dapat terhubung ke server.");
       }
@@ -294,6 +314,83 @@ export default function RegisterPage() {
             </Box>
           </Paper>
         </Container>
+        {/* INI BUAT LOADING */}
+        <Dialog
+          open={loading}
+          PaperProps={{
+            sx: {
+              bgcolor: "white",
+              borderRadius: 2,
+              p: 3,
+              minWidth: 300,
+            },
+          }}
+        >
+          <DialogContent>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <CircularProgress size={50} sx={{ color: "black" }} />
+              <Typography
+                variant="body1"
+                sx={{ color: "black", fontWeight: 500 }}
+              >
+                Signing in...
+              </Typography>
+            </Box>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={success}
+          PaperProps={{
+            sx: {
+              bgcolor: "white",
+              borderRadius: 2,
+              p: 3,
+              minWidth: 300,
+            },
+          }}
+        >
+          <DialogContent>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  bgcolor: "#4caf50",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CheckCircle size={36} color="white" />
+              </Box>
+              <Typography variant="h6" sx={{ color: "black", fontWeight: 600 }}>
+                Login Successful!
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "grey.600", textAlign: "center" }}
+              >
+                Redirecting to dashboard...
+              </Typography>
+            </Box>
+          </DialogContent>
+        </Dialog>
       </Box>
     </ThemeProvider>
   );

@@ -157,12 +157,7 @@ export default function OrderDetailDialog({ open, onClose, item }) {
               color="text.secondary"
               sx={{ mb: 3, lineHeight: 1.6 }}
             >
-              Nasi goreng is a popular Indonesian fried rice dish made with
-              cooked rice stir-fried in oil, soy sauce, garlic, shallots, and
-              chili. It’s often mixed with ingredients like eggs, chicken,
-              shrimp, or vegetables, and served with toppings such as fried
-              shallots, cucumber, and crackers. It’s flavorful, slightly sweet,
-              and smoky — a favorite comfort food across Indonesia.
+              {item.description}
             </Typography>
 
             {/* QUANTITY */}

@@ -11,15 +11,18 @@ import {
   Card,
   CardMedia,
   CardContent,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import api from "../../services/api";
+import { CheckCircle } from "lucide-react";
 
 export default function CartPopup({ open, onClose }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const token = localStorage.getItem("token");
+  const [success, setSuccess] = useState(false)
 
   useEffect(() => {
     if (!open) return;
@@ -49,8 +52,6 @@ export default function CartPopup({ open, onClose }) {
 
   const handleUpdateCart = async (item_id, newQuantity) => {
     try {
-      // let currentQuantity = cartItems[item_id] || 0;
-      // let newQuantity = currentQuantity + 1;
 
       setCartItems((prev) => ({
         ...prev,
@@ -122,6 +123,7 @@ export default function CartPopup({ open, onClose }) {
   };
 
   const createOrder = async () => {
+    setLoading(true)
     try {
       const res = await api.post(
         "/orders",
@@ -134,7 +136,17 @@ export default function CartPopup({ open, onClose }) {
         }
       );
       console.log("yeyeye", res.data);
+      setLoading(false)
+      setSuccess(true)
+
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 1000);
+
+      location.reload()
+
     } catch (error) {
+      setLoading(false)
       console.log(error.response?.data || error.message);
       console.log("yah gagal");
     }
@@ -144,10 +156,12 @@ export default function CartPopup({ open, onClose }) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      // maxWidth="xl"
+      minWidth="300px"
       // fullWidth
       // scroll="body"
       sx={{
+        // minWidth:"300px",
         "& .MuiPaper-root": {
           borderRadius: 1.5,
           overflow: "hidden",
@@ -161,6 +175,8 @@ export default function CartPopup({ open, onClose }) {
           justifyContent: "space-between",
           background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
           color: "white",
+          minWidth:"200px",
+          width:"100%"
         }}
       >
         <Typography variant="h5" fontWeight={700}>
@@ -178,6 +194,8 @@ export default function CartPopup({ open, onClose }) {
           maxHeight: "70vh",
           overflowY: "auto",
           scrollbarWidth: "none", // untuk Firefox
+          minWidth:"500px",
+          maxWIdth:"700px",
           "&::-webkit-scrollbar": {
             display: "none", // untuk Chrome, Edge, Safari
           },
@@ -297,6 +315,78 @@ export default function CartPopup({ open, onClose }) {
           </Box>
         )}
       </DialogContent>
+                  {/* INI BUAT LOADING */}
+            <Dialog
+              open={loading}
+              PaperProps={{
+                sx: {
+                  bgcolor: "white",
+                  borderRadius: 2,
+                  p: 3,
+                  minWidth: 300,
+                },
+              }}
+            >
+              <DialogContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  <CircularProgress size={50} sx={{ color: "black" }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "black", fontWeight: 500 }}
+                  >
+                    Signing in...
+                  </Typography>
+                </Box>
+              </DialogContent>
+            </Dialog>
+    
+            <Dialog
+              open={success}
+              PaperProps={{
+                sx: {
+                  bgcolor: "white",
+                  borderRadius: 2,
+                  p: 3,
+                  minWidth: 300,
+                },
+              }}
+            >
+              <DialogContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: "50%",
+                      bgcolor: "#4caf50",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CheckCircle size={36} color="white" />
+                  </Box>
+                  <Typography variant="h6" sx={{ color: "black", fontWeight: 600, fontFamily:"Inter, sans-serif" }}>
+                    Order Successful!
+                  </Typography>
+                </Box>
+              </DialogContent>
+            </Dialog>
     </Dialog>
   );
+
 }
