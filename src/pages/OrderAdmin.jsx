@@ -11,6 +11,10 @@ export default function OrderPageAdmin() {
   
     useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const user = JSON.parse(storedUser)
+    if (user.role != "admin") {
+      navigate("/")
+    }
     if (storedUser) {
       console.log("tes")
       setUser(JSON.parse(storedUser));

@@ -35,6 +35,7 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
     open: false,
     message: "",
   });
+  const [openPopup, setOpenPopup] = useState(false);
 
   const navigate = useNavigate();
 
@@ -184,7 +185,7 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  width: "clamp(280px, 23vw, 300px)",
+                  width: "clamp(310px, 23vw, 325px)",
                   borderRadius: 1,
                   transition: "all 0.3s ease",
                   cursor: "pointer",
@@ -329,7 +330,8 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
                       startIcon={<AddIcon />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleAddToCart(item.id);
+                        setOpen(true);
+                        setSelectedItem(item);
                       }}
                       sx={{
                         mt: "auto",
@@ -342,21 +344,21 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
                         },
                       }}
                     >
-                      Add to cart
+                      View Details
                     </Button>
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Handle buy now
+                        handleAddToCart(item.id);
                       }}
                       sx={{
                         mt: "auto",
                         background: "#30468b",
                       }}
                     >
-                      Buy now
+                      Add To Cart
                     </Button>
                   </Box>
                 </CardContent>

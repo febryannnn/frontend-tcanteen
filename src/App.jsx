@@ -7,6 +7,7 @@ import MenuPage from "./pages/MenuAdmin"
 import OrderPageAdmin from "./pages/OrderAdmin";
 import OrderListPage from "./pages/Order";
 import SalesPageAdmin from "./pages/Sales"
+import NotFoundPage from "./pages/404";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/dashboard/order" element={<OrderPageAdmin />} />
           <Route path="/order" element={<OrderListPage />} />
           <Route path="/dashboard/sales" element={<SalesPageAdmin />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>

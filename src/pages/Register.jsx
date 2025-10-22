@@ -277,7 +277,7 @@ export default function RegisterPage() {
                 sx={{
                   py: 1.5,
                   mb: 2,
-                  bgcolor: "black",
+                  bgcolor: "#30468b",
                   color: "white",
                   fontWeight: 600,
                   "&:hover": {

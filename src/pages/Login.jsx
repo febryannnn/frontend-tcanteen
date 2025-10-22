@@ -26,7 +26,7 @@ const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#000",
+      main: "#30468b",
     },
     background: {
       default: "#dbe2edff",
@@ -270,7 +270,7 @@ export default function LoginPage() {
                 sx={{
                   py: 1.5,
                   mb: 2,
-                  bgcolor: "black",
+                  bgcolor: "#30468b",
                   color: "white",
                   fontWeight: 600,
                   "&:hover": {

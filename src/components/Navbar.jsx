@@ -57,6 +57,7 @@ export default function Navbar({
     setUser({ name: "Guest", email: "Not logged in" });
     setIsLoggedIn(false);
     setShowProfileCard(false);
+    location.reload()
   };
 
   const toggleProfileCard = () => {
