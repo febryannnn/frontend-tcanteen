@@ -29,6 +29,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
     id: "",
     name: "",
     price: "",
+    stock:"",
     description: "",
     file: null,
   });
@@ -43,6 +44,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
         id: item.id,
         name: item.name,
         price: item.price,
+        stock:item.stock,
         description: item.description || "",
         file: null,
       });
@@ -67,6 +69,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             name: formData.name,
             price: formData.price,
             description: formData.description,
+            stock:formData.stock
           },
           {
             headers: {
@@ -202,13 +205,43 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
           />
 
           <TextField
-            label="Harga"
+            label="Price"
             type="number"
             fullWidth
             variant="outlined"
             value={formData.price}
             onChange={(e) =>
               setFormData({ ...formData, price: e.target.value })
+            }
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MoneyIcon sx={{ color: "#2c96c1ff" }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.3s",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(5, 1, 99, 0.1)",
+                },
+                "&.Mui-focused": {
+                  boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
+                },
+              },
+            }}
+          />
+
+          <TextField
+            label="Stock"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={formData.stock}
+            onChange={(e) =>
+              setFormData({ ...formData, stock: e.target.value })
             }
             InputProps={{
               startAdornment: (
@@ -310,7 +343,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                   },
                 }}
               >
-                Pilih File
+                Choose File
                 <input
                   type="file"
                   hidden
@@ -395,7 +428,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             },
           }}
         >
-          Batal
+          Cancel
         </Button>
         <Button
           onClick={handleSubmitMenu}
@@ -418,7 +451,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             transition: "all 0.3s",
           }}
         >
-          {loading ? "Menyimpan..." : isEdit ? "Perbarui Menu" : "Tambah Menu"}
+          {loading ? "Saving..." : isEdit ? "Update Menu" : "Add Menu"}
         </Button>
       </DialogActions>
     </Dialog>

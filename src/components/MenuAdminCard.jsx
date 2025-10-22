@@ -346,6 +346,23 @@ export default function MenuCardAdmin() {
                     {item.description}
                   </Typography>
 
+                  <Typography
+                    variant="body2"
+                    color="black"
+                    sx={{
+                      mb: 2,
+                      flexGrow: 1,
+                      lineHeight: 1.6,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    Stock: {item.stock}
+                  </Typography>
+
                   {/* Rating */}
                   <Box
                     sx={{

@@ -78,11 +78,13 @@ export default function AddMenu({
 
       if (onSaved) onSaved();
       onClose();
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data menu");
     } finally {
       setLoading(false);
+      window.location.reload();
     }
   };
 
@@ -164,7 +166,7 @@ export default function AddMenu({
       <DialogContent sx={{ px: 3, py: 3 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5, mt: 1 }}>
           <TextField
-            label="Nama Menu"
+            label="Menu Name"
             fullWidth
             variant="outlined"
             value={formData.name}
@@ -184,7 +186,7 @@ export default function AddMenu({
           />
 
           <TextField
-            label="Harga"
+            label="Price"
             type="number"
             fullWidth
             variant="outlined"
@@ -261,14 +263,14 @@ export default function AddMenu({
               }
             }}
           >
-            <option value="">Pilih Tipe</option>
+            <option value="">Choose Category</option>
             <option value="Main Course">Main Course</option>
             <option value="Beverage">Beverage</option>
             <option value="Snack">Snack</option>
           </TextField>
 
           <TextField
-            label="Deskripsi"
+            label="Deskription"
             fullWidth
             multiline
             rows={3}
@@ -321,7 +323,7 @@ export default function AddMenu({
                 gap: 1,
               }}
             >
-              <UploadIcon /> Upload Gambar Menu
+              <UploadIcon /> Upload Menu Image
             </Typography>
             
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
@@ -341,7 +343,7 @@ export default function AddMenu({
                   }
                 }}
               >
-                Pilih File
+                Choose File
                 <input
                   type="file"
                   hidden
@@ -353,7 +355,7 @@ export default function AddMenu({
               </Button>
               
               <Typography variant="body2" sx={{ color: "#666", flex: 1 }}>
-                {formData.file ? formData.file.name : "Belum ada file dipilih"}
+                {formData.file ? formData.file.name : "No choosen file"}
               </Typography>
 
               <Button
@@ -425,7 +427,7 @@ export default function AddMenu({
             }
           }}
         >
-          Batal
+          Cancel
         </Button>
         <Button
           onClick={handleSubmitMenu}
@@ -448,7 +450,7 @@ export default function AddMenu({
             transition: "all 0.3s",
           }}
         >
-          {loading ? "Menyimpan..." : isEdit ? "Perbarui Menu" : "Tambah Menu"}
+          {loading ? "Saving..." : isEdit ? "Update Menu" : "Add Menu"}
         </Button>
       </DialogActions>
     </Dialog>
