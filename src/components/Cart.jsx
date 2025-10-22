@@ -310,7 +310,7 @@ export default function CartPopup({ open, onClose }) {
               }}
               onClick={() => createOrder()}
             >
-              Pay Now
+              Order Now
             </Button>
           </Box>
         )}
@@ -341,7 +341,7 @@ export default function CartPopup({ open, onClose }) {
                     variant="body1"
                     sx={{ color: "black", fontWeight: 500 }}
                   >
-                    Signing in...
+                    Ordering...
                   </Typography>
                 </Box>
               </DialogContent>

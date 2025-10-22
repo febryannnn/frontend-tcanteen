@@ -13,6 +13,8 @@ import {
   IconButton,
   Chip,
   Rating,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -29,6 +31,10 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [favorites, setFavorites] = useState({});
   const [cartItems, setCartItems] = useState({});
+  const [errorNotif, setErrorNotif] = useState({
+    open: false,
+    message: "",
+  });
 
   const navigate = useNavigate();
 
@@ -51,7 +57,7 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
 
     const interval = setInterval(fetchMenus, 5000);
     return () => clearInterval(interval);
-  }, [searchTrigger, searchQuery]); // 🔹 Re-fetch saat searchTrigger berubah
+  }, [searchTrigger, searchQuery]);
 
   const categories = ["All Menu", "Snack", "Main Course", "Beverage"];
 
@@ -88,6 +94,10 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
         setCartCount((prev) => prev + 1);
       }
     } catch (err) {
+      setErrorNotif({
+        open: true,
+        message: `${err.response?.data?.message || err.message}`,
+      });
       console.error("Error adding to cart:", err.response?.data || err);
     }
   };
@@ -360,6 +370,9 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
             open={open}
             onClose={() => setOpen(false)}
             item={selectedItem}
+            setCartCount={setCartCount} // ✅ tambahkan
+            cartItems={cartItems} // ✅ tambahkan
+            setCartItems={setCartItems}
           />
         )}
 
@@ -371,6 +384,21 @@ export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
           </Box>
         )}
       </Container>
+      <Snackbar
+        open={errorNotif.open}
+        autoHideDuration={3000}
+        onClose={() => setErrorNotif({ ...errorNotif, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setErrorNotif({ ...errorNotif, open: false })}
+          sx={{ width: "100%" }}
+        >
+          {errorNotif.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

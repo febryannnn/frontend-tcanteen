@@ -11,6 +11,8 @@ import {
   TextField,
   Button,
   CardMedia,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -18,8 +20,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
+import api from "../../services/api";
 
-export default function OrderDetailDialog({ open, onClose, item }) {
+export default function OrderDetailDialog({ open, onClose, item, setCartCount, cartItems, setCartItems }) {
   console.log(item);
 
   const [quantity, setQuantity] = useState(1);
@@ -28,8 +31,50 @@ export default function OrderDetailDialog({ open, onClose, item }) {
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => quantity > 1 && setQuantity((q) => q - 1);
   const formatPrice = (price) => `Rp ${price.toLocaleString("id-ID")}`;
+  // const [cartItems, setCartItems] = useState([]);
+  // const [cartCount, setCartCount] = useState(0);
+  const [errorNotif, setErrorNotif] = useState({
+    open: false,
+    message: "",
+  });
 
+  const token = localStorage.getItem("token");
   const totalPrice = item.price * quantity;
+
+  const handleAddToCart = async (item_id) => {
+    try {
+      let currentQuantity = cartItems[item_id] || 0;
+      let newQuantity = currentQuantity + 1;
+
+      setCartItems((prev) => ({
+        ...prev,
+        [item_id]: newQuantity,
+      }));
+
+      await api.patch(
+        `/carts`,
+        {
+          menu_id: item_id,
+          quantity: newQuantity,
+        },
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+
+      if (setCartCount) {
+        setCartCount((prev) => prev + 1);
+      }
+    } catch (err) {
+      setErrorNotif({
+        open: true,
+        message: `${err.response?.data?.message || err.message}`
+      });
+      console.error("Error adding to cart:", err.response?.data || err);
+    }
+  };
 
   return (
     <Dialog
@@ -48,7 +93,7 @@ export default function OrderDetailDialog({ open, onClose, item }) {
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             height: { md: 500 },
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           {/* LEFT SECTION – IMAGE */}
@@ -231,8 +276,9 @@ export default function OrderDetailDialog({ open, onClose, item }) {
               startIcon={<ShoppingCartIcon />}
               sx={{ mt: 3, py: 1.2, fontWeight: 600, fontSize: "1rem" }}
               onClick={() => {
-                alert(`${item.name} (${quantity}) added to cart`);
-                onClose();
+                handleAddToCart(item.id);
+                // alert(`${item.name} (${quantity}) added to cart`);
+                // onClose();
               }}
             >
               Add to Cart
@@ -240,6 +286,21 @@ export default function OrderDetailDialog({ open, onClose, item }) {
           </Box>
         </Box>
       </DialogContent>
+      <Snackbar
+        open={errorNotif.open}
+        autoHideDuration={3000}
+        onClose={() => setErrorNotif({ ...errorNotif, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setErrorNotif({ ...errorNotif, open: false })}
+          sx={{ width: "100%" }}
+        >
+          {errorNotif.message}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 }
