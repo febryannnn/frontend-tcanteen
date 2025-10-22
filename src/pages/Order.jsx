@@ -80,6 +80,12 @@ export default function DashboardOrders() {
     open: false,
     message: "",
   });
+  const [prevStatuses, setPrevStatuses] = useState({});
+  const [notif, setNotif] = useState({
+    open: false,
+    message: "",
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
   const [openChart, setOpenChart] = useState(false);
@@ -103,24 +109,45 @@ export default function DashboardOrders() {
     }
   };
 
-  // Fetch orders
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await api.get("/orders", {
-          headers: {
-            Authorization: `bearer ${token}`,
-          },
+  const fetchOrders = async () => {
+    try {
+      const res = await api.get("/orders", {
+        headers: {
+          Authorization: `bearer ${token}`,
+        },
+      });
+
+      if (Array.isArray(res.data.data)) {
+        const newOrders = res.data.data;
+
+        // Deteksi perubahan status
+        newOrders.forEach((order) => {
+          const oldStatus = prevStatuses[order.id];
+          if (oldStatus && oldStatus !== order.status) {
+            setNotif({
+              open: true,
+              message: `Order Status for ORD-${order.id} change to: ${order.status}`,
+            });
+          }
         });
-        if (Array.isArray(res.data.data)) setOrders(res.data.data);
-        else setOrders(dummyOrders);
-      } catch (err) {
-        console.error("Gagal fetch orders:", err);
-        setOrders(dummyOrders);
+
+        // Update state orders & prevStatuses
+        setOrders(newOrders);
+
+        const updatedStatusMap = {};
+        newOrders.forEach((o) => (updatedStatusMap[o.id] = o.status));
+        setPrevStatuses(updatedStatusMap);
       }
-    };
+    } catch (err) {
+      console.error("Gagal fetch orders:", err);
+    }
+  };
+
+  useEffect(() => {
     fetchOrders();
-  }, []);
+    const interval = setInterval(fetchOrders, 10000);
+    return () => clearInterval(interval);
+  }, [prevStatuses]);
 
   console.log(orders);
   const handleExpand = (id) => {
@@ -678,6 +705,22 @@ export default function DashboardOrders() {
             sx={{ width: "100%" }}
           >
             {errorNotif.message}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={notif.open}
+          autoHideDuration={4000}
+          onClose={() => setNotif({ ...notif, open: false })}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setNotif({ ...notif, open: false })}
+            severity="info"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {notif.message}
           </Alert>
         </Snackbar>
       </Box>
