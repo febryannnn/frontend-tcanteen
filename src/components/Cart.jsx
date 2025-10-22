@@ -141,9 +141,10 @@ export default function CartPopup({ open, onClose }) {
 
       const timer = setTimeout(() => {
         setSuccess(false);
-      }, 1000);
+        location.reload()
+      }, 3000);
 
-      location.reload()
+
 
     } catch (error) {
       setLoading(false)
@@ -207,7 +208,7 @@ export default function CartPopup({ open, onClose }) {
           <Typography>Loading cart...</Typography>
         ) : menuItems.length === 0 ? (
           <Typography color="text.secondary">
-            Belum ada item di keranjang.
+            No items found in cart.
           </Typography>
         ) : (
           <Grid container spacing={2}>

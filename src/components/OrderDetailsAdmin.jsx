@@ -22,12 +22,13 @@ import {
   ExpandMore,
   MoreVert,
   Schedule,
-  LocalShipping,
+  FastfoodRounded,
   CheckCircle,
   Person,
   CalendarToday,
   AccessTime,
   ShoppingBag,
+  CancelRounded
 } from "@mui/icons-material";
 import api from "../../services/api";
 
@@ -123,13 +124,19 @@ export default function DashboardOrders() {
         label: "Processing",
         color: "#2196f3",
         bgcolor: alpha("#2196f3", 0.1),
-        icon: LocalShipping,
+        icon: FastfoodRounded,
       },
       completed: {
         label: "Completed",
         color: "#4caf50",
         bgcolor: alpha("#4caf50", 0.1),
         icon: CheckCircle,
+      },
+      cancelled: {
+        label: "Cancelled",
+        color: "#eb0606ff",
+        bgcolor: alpha("#c20505ff", 0.1),
+        icon: CancelRounded,
       },
     };
     return configs[status.toLowerCase()] || configs.pending;
@@ -230,7 +237,7 @@ export default function DashboardOrders() {
             value="Pending"
           />
           <Tab
-            icon={<LocalShipping sx={{ fontSize: 20, mb: 0.5 }} />}
+            icon={<FastfoodRounded sx={{ fontSize: 20, mb: 0.5 }} />}
             iconPosition="start"
             label="Processing"
             value="Processing"
@@ -240,6 +247,12 @@ export default function DashboardOrders() {
             iconPosition="start"
             label="Completed"
             value="Completed"
+          />
+          <Tab
+            icon={<CancelRounded sx={{ fontSize: 20, mb: 0.5 }} />}
+            iconPosition="start"
+            label="Cancelled"
+            value="Cancelled"
           />
         </Tabs>
       </Paper>
@@ -587,7 +600,7 @@ export default function DashboardOrders() {
             "&:hover": { bgcolor: alpha("#2196f3", 0.08) },
           }}
         >
-          <LocalShipping sx={{ mr: 1.5, fontSize: 20, color: "#2196f3" }} />
+          <FastfoodRounded sx={{ mr: 1.5, fontSize: 20, color: "#2196f3" }} />
           Processing
         </MenuItem>
         <MenuItem

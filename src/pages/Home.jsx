@@ -77,6 +77,14 @@ export default function CanteenHomepage() {
   };
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"))
+    console.log("user sekarang" + user)
+    if (user.name === "admin") {
+      navigate("/dashboard/menu")
+    }
+  })
+
+  useEffect(() => {
     if (isHovered) return;
 
     const interval = setInterval(() => {
@@ -134,7 +142,7 @@ export default function CanteenHomepage() {
           openCart={openChart}
           setOpenCart={setOpenChart}
           handleAuthNav={handleAuthNav}
-          onSearch={handleSearch} // 🔹 Pass fungsi search
+          onSearch={handleSearch}
         />
 
         {/* Hero Section */}
