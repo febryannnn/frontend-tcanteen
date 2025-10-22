@@ -13,9 +13,6 @@ import {
   IconButton,
   Chip,
   Rating,
-  CircularProgress,
-  Dialog,
-  DialogContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -24,60 +21,47 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import OrderDetailDialog from "./MenuDetails";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle } from "lucide-react";
 
-export default function MenuCard() {
+export default function MenuCard({ searchQuery, searchTrigger, setCartCount }) {
   const [menuItems, setMenuItems] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [favorites, setFavorites] = useState({});
-  const [cartCount, setCartCount] = useState(0);
-  const [formData, setFormData] = useState({
-    id: "",
-    quantitiy: 0,
-  });
   const [cartItems, setCartItems] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
-  let menuCartCount = 0;
 
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const response = await api.get("/menus");
+        const response = await api.get("/menus", {
+          params: {
+            name: searchQuery || undefined, // kirim param name hanya jika ada
+          },
+        });
         setMenuItems(response.data.data || response.data);
+        console.log(`Fetching menus with query: ${searchQuery}`);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching menus:", err);
       }
     };
+
     fetchMenus();
 
     const interval = setInterval(fetchMenus, 5000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [searchTrigger, searchQuery]); // 🔹 Re-fetch saat searchTrigger berubah
 
   const categories = ["All Menu", "Snack", "Main Course", "Beverage"];
-
-  const categoryMapping = {
-    snack: "Snack",
-    foods: "Makanan",
-    beverages: "Minuman",
-  };
-  
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  console.log("Token:", localStorage.getItem("token"));
+
   const token = localStorage.getItem("token");
 
   const handleAddToCart = async (item_id) => {
-    setLoading(true);
     try {
       let currentQuantity = cartItems[item_id] || 0;
       let newQuantity = currentQuantity + 1;
@@ -87,9 +71,6 @@ export default function MenuCard() {
         [item_id]: newQuantity,
       }));
 
-      console.log("Sending:", { menu_id: item_id, quantity: newQuantity });
-
-      // Kirim ke backend
       await api.patch(
         `/carts`,
         {
@@ -102,18 +83,11 @@ export default function MenuCard() {
           },
         }
       );
-      setLoading(false);
-      setSuccess(true);
-      // setSuccess(false)
 
-      const timer = setTimeout(() => {
-        setSuccess(false);
-      }, 1000);
-
-      // Update badge cart count total
-      setCartCount((prev) => prev + 1);
+      if (setCartCount) {
+        setCartCount((prev) => prev + 1);
+      }
     } catch (err) {
-      setLoading(false);
       console.error("Error adding to cart:", err.response?.data || err);
     }
   };
@@ -142,7 +116,6 @@ export default function MenuCard() {
   return (
     <>
       <Container maxWidth="xl" sx={{ mt: 8, mb: 8 }}>
-        {/* Category Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 4 }}>
           <Tabs
             value={selectedTab}
@@ -151,9 +124,9 @@ export default function MenuCard() {
             sx={{
               "& .MuiTab-root": {
                 textTransform: "none",
-                fontSize: "1rem",
+                fontSize: "1.2rem",
                 fontWeight: 500,
-                minWidth: 120,
+                minWidth: 150,
                 color: "text.secondary",
               },
               "& .Mui-selected": {
@@ -163,12 +136,20 @@ export default function MenuCard() {
             }}
           >
             {categories.map((label, index) => (
-              <Tab key={index} label={label} />
+              <Tab
+                key={index}
+                label={label}
+                disableRipple
+                sx={{
+                  mx: 1,
+                  "&:focus": { outline: "none" },
+                  "&:active": { outline: "none" },
+                }}
+              />
             ))}
           </Tabs>
         </Box>
 
-        {/* Menu Grid - 4 cards per row */}
         <Grid
           container
           spacing={4}
@@ -177,6 +158,8 @@ export default function MenuCard() {
           sx={{
             overflowX: "hidden",
             flexWrap: "wrap",
+            pt: 2,
+            pb: 1,
           }}
         >
           {filteredItems.map((item) => (
@@ -191,7 +174,7 @@ export default function MenuCard() {
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  width: "clamp(290px, 23vw, 330px)",
+                  width: "clamp(280px, 23vw, 300px)",
                   borderRadius: 1,
                   transition: "all 0.3s ease",
                   cursor: "pointer",
@@ -201,7 +184,6 @@ export default function MenuCard() {
                   },
                 }}
               >
-                {/* Image Container with Favorite & Category */}
                 <Box sx={{ position: "relative" }}>
                   <CardMedia
                     component="img"
@@ -213,7 +195,6 @@ export default function MenuCard() {
                     }}
                   />
 
-                  {/* Favorite Button */}
                   <IconButton
                     onClick={(e) => handleToggleFavorite(item.id, e)}
                     sx={{
@@ -233,7 +214,6 @@ export default function MenuCard() {
                     )}
                   </IconButton>
 
-                  {/* Category Chip */}
                   <Chip
                     icon={<LocalOfferIcon />}
                     label={item.type}
@@ -256,11 +236,10 @@ export default function MenuCard() {
                     p: 2.5,
                   }}
                 >
-                  {/* Title and Price */}
                   <Box
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
                       alignItems: "flex-start",
                       mb: 1,
                     }}
@@ -278,8 +257,10 @@ export default function MenuCard() {
                     <Typography
                       variant="h6"
                       sx={{
-                        fontWeight: 700,
+                        fontWeight: 600,
+                        fontSize: "1.1rem",
                         color: "primary.main",
+                        textAlign: "right",
                         ml: 1,
                       }}
                     >
@@ -287,7 +268,6 @@ export default function MenuCard() {
                     </Typography>
                   </Box>
 
-                  {/* Description */}
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -305,7 +285,6 @@ export default function MenuCard() {
                     {item.description}
                   </Typography>
 
-                  {/* Rating */}
                   <Box
                     sx={{
                       display: "flex",
@@ -327,40 +306,47 @@ export default function MenuCard() {
                     </Typography>
                   </Box>
 
-                  {/* Add Button */}
-                  <Box sx={{ display: "flex", gap: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 1,
+                      width: "100%",
+                    }}
+                  >
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={(e) => {
-                        setOpen(true);
-                        setSelectedItem(item);
+                        e.stopPropagation();
+                        handleAddToCart(item.id);
                       }}
                       sx={{
                         mt: "auto",
-                        borderColor: "#2c96c1ff",
-                        border: 1,
-                        background: "transparent",
+                        background: "#ffffffff",
                         color: "black",
+                        border: 1,
+                        "&:hover": {
+                          borderColor: "#30468b",
+                          color: "#30468b",
+                        },
                       }}
                     >
-                      View Details
+                      Add to cart
                     </Button>
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        menuCartCount++;
-                        handleAddToCart(item.id);
+                        // Handle buy now
                       }}
                       sx={{
                         mt: "auto",
-                        background:
-                          "linear-gradient(45deg, #050163ff, #2c96c1ff)",
+                        background: "#30468b",
                       }}
                     >
-                      Add to Cart
+                      Buy now
                     </Button>
                   </Box>
                 </CardContent>
@@ -380,89 +366,11 @@ export default function MenuCard() {
         {filteredItems.length === 0 && (
           <Box sx={{ textAlign: "center", py: 8 }}>
             <Typography variant="h6" color="text.secondary">
-              No Items Found.
+              Tidak ada item yang sesuai dengan pencarian Anda.
             </Typography>
           </Box>
         )}
       </Container>
-      {/* INI BUAT LOADING */}
-      <Dialog
-        open={loading}
-        PaperProps={{
-          sx: {
-            bgcolor: "white",
-            borderRadius: 2,
-            p: 3,
-            minWidth: 300,
-          },
-        }}
-      >
-        <DialogContent>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <CircularProgress size={50} sx={{ color: "black" }} />
-            <Typography
-              variant="body1"
-              sx={{ color: "black", fontWeight: 500 }}
-            >
-              Adding to cart...
-            </Typography>
-          </Box>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={success}
-        PaperProps={{
-          sx: {
-            bgcolor: "white",
-            borderRadius: 2,
-            p: 3,
-            minWidth: 300,
-          },
-        }}
-      >
-        <DialogContent>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <Box
-              sx={{
-                width: 60,
-                height: 60,
-                borderRadius: "50%",
-                bgcolor: "#4caf50",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CheckCircle size={36} color="white" />
-            </Box>
-            <Typography
-              variant="h6"
-              sx={{
-                color: "black",
-                fontWeight: 600,
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              Added to Cart Succesfully!
-            </Typography>
-          </Box>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

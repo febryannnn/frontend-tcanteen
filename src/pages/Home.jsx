@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Typography,
-  Container,
   Box,
   ThemeProvider,
   createTheme,
@@ -10,18 +8,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import heroBg from "../assets/header-2.svg";
-import api from "../../services/api";
 import InfiniteCarousel from "../components/Promo";
 import MenuCard from "../components/MenuCard";
 import CustomerReviews from "../components/Rating";
 import heroBg1 from "../assets/bgMenu1.svg";
 import heroBg2 from "../assets/bgMenu2.svg";
 import heroBg3 from "../assets/bgMenu3.svg";
+import heroBg4 from "../assets/bgMenu4.svg";
 import { IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import heroBg4 from "../assets/bgMenu4.svg";
 
 const theme = createTheme({
   typography: {
@@ -30,7 +26,7 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#000000ff",
+      main: "#30468b",
       light: "#041f6aff",
       dark: "#040c66ff",
     },
@@ -59,36 +55,29 @@ export default function CanteenHomepage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
   const [openChart, setOpenChart] = useState(false);
-  const [loading, setLoading] = useState(0);
   const [bgIndex, setBgIndex] = useState(1);
-  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-
-  const categories = ["all", "snack", "foods", "beverages"];
+  
+  const [searchTrigger, setSearchTrigger] = useState(0);
 
   const backgrounds = [heroBg1, heroBg2, heroBg3, heroBg4];
+  const loopedBackgrounds = [
+    backgrounds[backgrounds.length - 1],
+    ...backgrounds,
+    backgrounds[0],
+  ];
 
- 
-// tambahkan duplikat pertama di akhir & terakhir di awal untuk efek loop halus
-const loopedBackgrounds = [
-  backgrounds[backgrounds.length - 1],
-  ...backgrounds,
-  backgrounds[0],
-];
-
-  // Geser ke kanan
   const nextSlide = () => {
     setBgIndex((prev) => prev + 1);
   };
 
-  // Geser ke kiri
   const prevSlide = () => {
     setBgIndex((prev) => prev - 1);
   };
 
-  // Efek looping otomatis
   useEffect(() => {
-    if (isHovered) return; // pause saat hover
+    if (isHovered) return;
 
     const interval = setInterval(() => {
       setBgIndex((prev) => prev + 1);
@@ -97,16 +86,13 @@ const loopedBackgrounds = [
     return () => clearInterval(interval);
   }, [isHovered]);
 
-  // Loop tanpa jeda visual
   useEffect(() => {
     if (bgIndex === loopedBackgrounds.length - 1) {
-      // kalau di slide duplikat terakhir → reset ke index 1
       setTimeout(() => {
         setIsTransitioning(false);
         setBgIndex(1);
       }, 2000);
     } else if (bgIndex === 0) {
-      // kalau di slide duplikat pertama → reset ke index terakhir yang asli
       setTimeout(() => {
         setIsTransitioning(false);
         setBgIndex(loopedBackgrounds.length - 2);
@@ -124,6 +110,10 @@ const loopedBackgrounds = [
     }
   };
 
+  const handleSearch = () => {
+    setSearchTrigger((prev) => prev + 1);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -132,8 +122,8 @@ const loopedBackgrounds = [
           flexGrow: 1,
           minHeight: "100vh",
           backgroundColor: "background.default",
-          width: "100vw",
-          overflow: "hidden",
+          width: "100%",
+          overflowX: "hidden",
           alignItems: "center",
         }}
       >
@@ -144,13 +134,14 @@ const loopedBackgrounds = [
           openCart={openChart}
           setOpenCart={setOpenChart}
           handleAuthNav={handleAuthNav}
+          onSearch={handleSearch} // 🔹 Pass fungsi search
         />
 
-        {/* Hero Section - Slide ke kiri otomatis */}
+        {/* Hero Section */}
         <Box
           sx={{
             position: "relative",
-            width: "100vw",
+            width: "100%",
             overflow: "hidden",
             mt: 8,
             height: "280px",
@@ -158,68 +149,70 @@ const loopedBackgrounds = [
           onMouseEnter={() => setIsHovered(true)} 
           onMouseLeave={() => setIsHovered(false)} 
         >
-        {/* Semua gambar ditaruh dalam 1 baris */}
-        <Box
-          sx={{
-            display: "flex",
-            width: "max-content",
-            transform: `translateX(-${bgIndex * 100}vw)`,
-            transition: isTransitioning ? "transform 2s ease-in-out" : "none",
-          }}
-        >
-          {loopedBackgrounds.map((bg, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: "100vw",
-                height: "280px",
-                backgroundImage: `url(${bg})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                flexShrink: 0,
-              }}
-            />
-          ))}
+          <Box
+            sx={{
+              display: "flex",
+              width: "max-content",
+              transform: `translateX(-${bgIndex * 100}vw)`,
+              transition: isTransitioning ? "transform 2s ease-in-out" : "none",
+            }}
+          >
+            {loopedBackgrounds.map((bg, index) => (
+              <Box
+                key={index}
+                sx={{
+                  width: "100vw",
+                  height: "280px",
+                  backgroundImage: `url(${bg})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </Box>
+
+          <IconButton
+            onClick={prevSlide}
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: 10,
+              transform: "translateY(-50%)",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+              "&:focus": { outline: "none" },
+              "&:active": { outline: "none" }
+            }}
+          >
+            <ArrowBackIosNewIcon/>
+          </IconButton>
+
+          <IconButton
+            onClick={nextSlide}
+            sx={{
+              position: "absolute",
+              top: "50%",
+              right: 10,
+              transform: "translateY(-50%)",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+              "&:focus": { outline: "none" },
+              "&:active": { outline: "none" }
+            }}
+          >
+            <ArrowForwardIosIcon/>
+          </IconButton>
         </Box>
 
-        {/* Tombol Kiri */}
-        <IconButton
-          onClick={prevSlide}
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: 20,
-            transform: "translateY(-50%)",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
-            "&:focus": { outline: "none" }, // hilangkan stroke putih saat fokus
-            "&:active": { outline: "none" } // hilangkan stroke putih saat klik
-          }}
-        >
-          <ArrowBackIosNewIcon/>
-        </IconButton>
-
-        {/* Tombol Kanan */}
-        <IconButton
-          onClick={nextSlide}
-          sx={{
-            position: "absolute",
-            top: "50%",
-            right: 10,
-            transform: "translateY(-50%)",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
-            "&:focus": { outline: "none" }, // hilangkan stroke putih saat fokus
-            "&:active": { outline: "none" } // hilangkan stroke putih saat klik
-          }}
-        >
-          <ArrowForwardIosIcon/>
-        </IconButton>
-      </Box>
         <InfiniteCarousel />
-        <MenuCard />
+        <MenuCard 
+          searchQuery={searchQuery}
+          searchTrigger={searchTrigger} 
+          setCartCount={setCartCount}
+        />
         <CustomerReviews />
       </Box>
       <Footer />

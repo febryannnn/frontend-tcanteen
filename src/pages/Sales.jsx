@@ -1,10 +1,11 @@
 import { React, useContext, useEffect } from "react";
 import MainLayout from "../layout/MainLayoutAdmin";
-import Dashboard from "../components/OrderDetailsAdmin";
+import MenuCardAdmin from "../components/MenuAdminCard";
+import SalesAnalytics from "../components/Sales";
 import { UserContext } from "../components/UserContext";
 import { useNavigate } from "react-router-dom";
 
-export default function OrderPageAdmin() {
+export default function SalesPageAdmin() {
   const { user, setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function OrderPageAdmin() {
 
   return (
     <MainLayout>
-      <Dashboard/>
+      <SalesAnalytics/>
     </MainLayout>
   );
 }

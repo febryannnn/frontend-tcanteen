@@ -17,78 +17,64 @@ import {
 import {
   Close as CloseIcon,
   AttachMoney as MoneyIcon,
+  Inventory as StockIcon,
   Description as DescriptionIcon,
   CloudUpload as UploadIcon,
-  Edit as EditIcon,
-  AddCircle as AddIcon,
+  Image as ImageIcon,
 } from "@mui/icons-material";
 import api from "../../services/api";
 
-export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
+export default function AddMenu({
+  open,
+  onClose,
+  onSaved,
+}) {
   const [formData, setFormData] = useState({
     id: "",
     name: "",
     price: "",
     description: "",
+    type: "",
     file: null,
   });
   const [isEdit, setIsEdit] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // isi data ke form saat item berubah
   useEffect(() => {
-    if (item) {
-      setFormData({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        description: item.description || "",
-        file: null,
-      });
-      setPreviewImage(item.image_url || "");
-      setIsEdit(true);
-    } else {
-      setFormData({ id: "", name: "", price: "", description: "", file: null });
-      setPreviewImage("");
-      setIsEdit(false);
-    }
-  }, [item]);
+    setFormData({
+      id: "",
+      name: "",
+      price: "",
+      description: "",
+      stock: "",
+      type: "",
+      file: null,
+    });
+    setPreviewImage("");
+    setIsEdit(false);
+  }, []);
 
   const handleSubmitMenu = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      if (isEdit) {
-        await api.patch(
-          `admin/menus/${formData.id}`,
-          {
-            name: formData.name,
-            price: formData.price,
-            description: formData.description,
+      await api.post(
+        `/admin/menus`,
+        {
+          name: formData.name,
+          price: formData.price,
+          stock: formData.stock,
+          type: formData.type,
+          description: formData.description,
+        },
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
           },
-          {
-            headers: {
-              Authorization: `bearer ${token}`,
-            },
-          }
-        );
-      } else {
-        await api.post(
-          `/menus`,
-          {
-            name: formData.name,
-            price: formData.price,
-            description: formData.description,
-          },
-          {
-            headers: {
-              Authorization: `bearer ${token}`,
-            },
-          }
-        );
-      }
+        }
+      );
 
       if (onSaved) onSaved();
       onClose();
@@ -101,7 +87,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
   };
 
   const handleUploadImage = async () => {
-    if (!formData.file || !formData.id) {
+    if (!formData.file) {
       alert("Pilih file dulu atau pastikan menu sudah tersimpan.");
       return;
     }
@@ -130,10 +116,10 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      fullWidth 
       maxWidth="sm"
       TransitionComponent={Fade}
       PaperProps={{
@@ -141,11 +127,11 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
           borderRadius: 3,
           background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)",
           boxShadow: "0 20px 60px rgba(5, 1, 99, 0.15)",
-        },
+        }
       }}
     >
-      <DialogTitle
-        sx={{
+      <DialogTitle 
+        sx={{ 
           background: "linear-gradient(135deg, #050163ff 0%, #2c96c1ff 100%)",
           color: "white",
           display: "flex",
@@ -156,23 +142,19 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          {isEdit ? (
-            <EditIcon sx={{ fontSize: 28 }} />
-          ) : (
-            <AddIcon sx={{ fontSize: 28 }} />
-          )}
+          <ImageIcon sx={{ fontSize: 28 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, letterSpacing: 0.5 }}>
             {isEdit ? "Edit Menu" : "Tambah Menu"}
           </Typography>
         </Box>
-        <IconButton
-          onClick={onClose}
+        <IconButton 
+          onClick={onClose} 
           size="small"
-          sx={{
+          sx={{ 
             color: "white",
             "&:hover": {
               background: alpha("#ffffff", 0.2),
-            },
+            }
           }}
         >
           <CloseIcon />
@@ -196,8 +178,8 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                 },
                 "&.Mui-focused": {
                   boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
-                },
-              },
+                }
+              }
             }}
           />
 
@@ -207,9 +189,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             fullWidth
             variant="outlined"
             value={formData.price}
-            onChange={(e) =>
-              setFormData({ ...formData, price: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -226,10 +206,66 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                 },
                 "&.Mui-focused": {
                   boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
-                },
-              },
+                }
+              }
             }}
           />
+
+          <TextField
+            label="Stock"
+            fullWidth
+            variant="outlined"
+            value={formData.stock}
+            onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <StockIcon sx={{ color: "#2c96c1ff" }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.3s",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(5, 1, 99, 0.1)",
+                },
+                "&.Mui-focused": {
+                  boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
+                }
+              }
+            }}
+          />
+
+          <TextField
+            select
+            label=""
+            fullWidth
+            variant="outlined"
+            value={formData.type || ""}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            SelectProps={{
+              native: true,
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.3s",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(5, 1, 99, 0.1)",
+                },
+                "&.Mui-focused": {
+                  boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
+                }
+              }
+            }}
+          >
+            <option value="">Pilih Tipe</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Beverage">Beverage</option>
+            <option value="Snack">Snack</option>
+          </TextField>
 
           <TextField
             label="Deskripsi"
@@ -238,15 +274,10 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             rows={3}
             variant="outlined"
             value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             InputProps={{
               startAdornment: (
-                <InputAdornment
-                  position="start"
-                  sx={{ alignSelf: "flex-start", mt: 1.5 }}
-                >
+                <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}>
                   <DescriptionIcon sx={{ color: "#2c96c1ff" }} />
                 </InputAdornment>
               ),
@@ -260,8 +291,8 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                 },
                 "&.Mui-focused": {
                   boxShadow: "0 4px 16px rgba(44, 150, 193, 0.2)",
-                },
-              },
+                }
+              }
             }}
           />
 
@@ -276,13 +307,13 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
               "&:hover": {
                 borderColor: "#050163ff",
                 boxShadow: "0 4px 16px rgba(5, 1, 99, 0.1)",
-              },
+              }
             }}
           >
-            <Typography
-              variant="subtitle2"
-              sx={{
-                mb: 2,
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                mb: 2, 
                 color: "#050163ff",
                 fontWeight: 600,
                 display: "flex",
@@ -292,7 +323,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             >
               <UploadIcon /> Upload Gambar Menu
             </Typography>
-
+            
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
               <Button
                 variant="outlined"
@@ -307,7 +338,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                   "&:hover": {
                     borderColor: "#050163ff",
                     background: alpha("#050163ff", 0.05),
-                  },
+                  }
                 }}
               >
                 Pilih File
@@ -320,7 +351,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                   }
                 />
               </Button>
-
+              
               <Typography variant="body2" sx={{ color: "#666", flex: 1 }}>
                 {formData.file ? formData.file.name : "Belum ada file dipilih"}
               </Typography>
@@ -328,12 +359,11 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
               <Button
                 variant="contained"
                 onClick={handleUploadImage}
-                disabled={loading || !formData.file || !formData.id}
+                disabled={loading || !formData.file}
                 startIcon={<UploadIcon />}
                 sx={{
                   borderRadius: 2,
-                  background:
-                    "linear-gradient(135deg, #050163ff 0%, #2c96c1ff 100%)",
+                  background: "linear-gradient(135deg, #050163ff 0%, #2c96c1ff 100%)",
                   px: 3,
                   py: 1,
                   fontWeight: 600,
@@ -343,7 +373,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
                   },
                   "&:disabled": {
                     background: "#ccc",
-                  },
+                  }
                 }}
               >
                 Upload
@@ -371,15 +401,15 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
         </Box>
       </DialogContent>
 
-      <DialogActions
-        sx={{
-          px: 3,
+      <DialogActions 
+        sx={{ 
+          px: 3, 
           py: 2.5,
           background: alpha("#f8f9ff", 0.5),
           gap: 1.5,
         }}
       >
-        <Button
+        <Button 
           onClick={onClose}
           variant="outlined"
           sx={{
@@ -392,7 +422,7 @@ export default function OrderDetailDialog({ open, onClose, item, onSaved }) {
             "&:hover": {
               borderColor: "#999",
               background: alpha("#000", 0.02),
-            },
+            }
           }}
         >
           Batal

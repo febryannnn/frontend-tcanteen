@@ -23,6 +23,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import CartPopup from "./Cart";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
+import logo from "../assets/logoTCanteen.png";
 
 export default function Navbar({
   searchQuery,
@@ -31,14 +32,13 @@ export default function Navbar({
   openCart,
   setOpenCart,
   handleAuthNav,
+  onSearch,
 }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  // const [user, setUser] = useState({ name: "Guest", email: "guest@gmail.com" });
   const { user, setUser } = useContext(UserContext);
 
-  // 🔹 Cek token di localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
@@ -57,11 +57,22 @@ export default function Navbar({
     setUser({ name: "Guest", email: "Not logged in" });
     setIsLoggedIn(false);
     setShowProfileCard(false);
-    // navigate("/login");
   };
 
   const toggleProfileCard = () => {
     setShowProfileCard((prev) => !prev);
+  };
+
+  const handleSearchClick = () => {
+    if (onSearch) {
+      onSearch(searchQuery);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearchClick();
+    }
   };
 
   return (
@@ -75,46 +86,61 @@ export default function Navbar({
       }}
     >
       <Toolbar sx={{ py: 1 }}>
-        {/* LOGO */}
-        <Typography
-          variant="h5"
+        <Box
+          component="img"
+          src={logo}
+          alt="TCanteen Logo"
           sx={{
-            fontWeight: 700,
-            color: "primary.main",
+            height: 25,
             cursor: "pointer",
           }}
           onClick={() => navigate("/")}
-        >
-          TCanteen
-        </Typography>
+        />
 
         <Box sx={{ flexGrow: 1 }} />
 
         {/* SEARCH */}
-        <TextField
-          placeholder="Search menu..."
-          size="small"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            width: 300,
-            mr: 3,
-            "& .MuiOutlinedInput-root": {
-              bgcolor: "#f5f5f5",
-              borderRadius: "12px",
-              "& fieldset": { borderColor: "transparent" },
-              "&:hover fieldset": { borderColor: "#ccc" },
-              "&.Mui-focused fieldset": { borderColor: "primary.main" },
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "grey.600" }} />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box sx={{ display: "flex", alignItems: "center", mr: 3 }}>
+          <TextField
+            placeholder="Search menu..."
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            sx={{
+              width: 300,
+              "& .MuiOutlinedInput-root": {
+                bgcolor: "#f5f5f5",
+                borderRadius: "12px 0 0 12px",
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "#ccc" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "grey.600" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleSearchClick}
+            sx={{
+              height: "40px",
+              minWidth: "60px",
+              borderRadius: "0 12px 12px 0",
+              boxShadow: "none",
+              "&:hover": {
+                boxShadow: "none",
+              },
+            }}
+          >
+            Search
+          </Button>
+        </Box>
 
         {/* CART */}
         <IconButton onClick={() => setOpenCart(true)} sx={{ mr: 2 }}>
@@ -129,7 +155,14 @@ export default function Navbar({
           <>
             <Button
               variant="outlined"
-              sx={{ mr: 1.5, borderRadius: "10px" }}
+              sx={{
+                mr: 1.5,
+                borderRadius: "10px",
+                "&:hover": {
+                  borderColor: "#30468b",
+                  color: "#30468b",
+                },
+              }}
               onClick={() => handleAuthNav("login")}
             >
               Login

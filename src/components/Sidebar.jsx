@@ -53,43 +53,43 @@ export default function Sidebar({ open, onClose, variant = "permanent" }) {
   };
 
   const menuItems = [
-    {
-      key: "dashboard",
-      title: "Dashboard",
-      icon: <DashboardIcon />,
-      path: "/dashboard",
-    },
+    // {
+    //   key: "dashboard",
+    //   title: "Dashboard",
+    //   icon: <DashboardIcon />,
+    //   path: "/dashboard",
+    // },
     {
       key: "menu",
       title: "Menu",
       icon: <MenuBookIcon />,
-      path: "/dashboardmenu",
-      submenu: [
-        { title: "All Menu", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
-        { title: "Snack", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
-        { title: "Main Course", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
-        { title: "Beverage", path: "/dashboardmenu", icon: <RestaurantMenuIcon /> },
-      ],
+      path: "/dashboard/menu",
+      // submenu: [
+      //   { title: "All Menu", path: "/dashboard/menu", icon: <RestaurantMenuIcon /> },
+      //   { title: "Snack", path: "/dashboard/menu", icon: <RestaurantMenuIcon /> },
+      //   { title: "Main Course", path: "/dashboard/menu", icon: <RestaurantMenuIcon /> },
+      //   { title: "Beverage", path: "/dashboard/menu", icon: <RestaurantMenuIcon /> },
+      // ],
     },
     {
       key: "order",
       title: "Order",
       icon: <ShoppingCartIcon />,
       path: "/dashboard/order",
-      submenu: [
-        { title: "New Orders", path: "/dashboard/order", icon: <ShoppingCartIcon /> },
-      ],
+      // submenu: [
+      //   { title: "New Orders", path: "/dashboard/order", icon: <ShoppingCartIcon /> },
+      // ],
     },
-    {
-      key: "sales",
-      title: "Penjualan",
-      icon: <BarChartIcon />,
-      path: "/sales",
-      submenu: [
-        { title: "Sales Report", path: "/sales/report", icon: <BarChartIcon /> },
-        { title: "Analytics", path: "/sales/analytics", icon: <TrendingUpIcon /> },
-      ],
-    },
+    // {
+    //   key: "sales",
+    //   title: "Penjualan",
+    //   icon: <BarChartIcon />,
+    //   path: "/sales",
+    //   submenu: [
+    //     { title: "Sales Report", path: "/dashboard/sales", icon: <BarChartIcon /> },
+    //     { title: "Analytics", path: "/dashboard/sales", icon: <TrendingUpIcon /> },
+    //   ],
+    // },
   ];
 
   const bottomMenuItems = [

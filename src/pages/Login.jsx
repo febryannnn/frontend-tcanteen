@@ -12,13 +12,15 @@ import {
   Alert,
   CircularProgress,
   Dialog,
-  DialogContent
+  DialogContent,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
 import { CheckCircle } from "lucide-react";
+import { InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const lightTheme = createTheme({
   palette: {
@@ -42,9 +44,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+
+  // Di dalam component LoginPage
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -93,7 +98,7 @@ export default function LoginPage() {
       setSuccess(true);
 
       if (response.data.data.user.role === "admin") {
-        navigate("/dashboardmenu");
+        navigate("/dashboard/menu");
       } else {
         navigate("/");
       }
@@ -118,7 +123,7 @@ export default function LoginPage() {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "background.default",
-          fontFamily:"Inter, sans-serif"
+          fontFamily: "Inter, sans-serif",
         }}
       >
         <Container maxWidth="sm">
@@ -206,7 +211,7 @@ export default function LoginPage() {
                 </Typography>
                 <TextField
                   fullWidth
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -225,6 +230,19 @@ export default function LoginPage() {
                       color: "gray",
                       opacity: 1,
                     },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          onMouseDown={(e) => e.preventDefault()} // supaya klik tidak hilangkan focus
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                 />
               </Box>
@@ -371,16 +389,25 @@ export default function LoginPage() {
               >
                 <CheckCircle size={36} color="white" />
               </Box>
-              <Typography variant="h6" sx={{ color: "black", fontWeight: 600, fontFamily:"Inter, sans-serif" }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "black",
+                  fontWeight: 600,
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
                 Login Successful!
               </Typography>
-              <Typography variant="body2" sx={{ color: "grey.600", textAlign: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "grey.600", textAlign: "center" }}
+              >
                 Redirecting to dashboard...
               </Typography>
             </Box>
           </DialogContent>
         </Dialog>
-
       </Box>
     </ThemeProvider>
   );

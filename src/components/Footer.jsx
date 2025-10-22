@@ -16,6 +16,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
+import logo from "../assets/logoTCanteenWhite.png";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -55,29 +56,28 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
+        background: "#30468b",
         color: "white",
-        pt: 6,
+        pt: 4.5,
         pb: 3,
         mt: "auto",
       }}
     >
       <Container maxWidth="xl">
-        <Grid container spacing={4}>
-          {/* Brand Section */}
+        <Grid container spacing={6}>
           <Grid item xs={12} md={4}>
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <RestaurantMenuIcon sx={{ fontSize: 40, mr: 1 }} />
-                <Typography
-                  variant="h5"
+                <Box
+                  component="img"
+                  src={logo}
+                  alt="TCanteen Logo"
                   sx={{
-                    fontWeight: 800,
-                    fontFamily: '"Poppins", sans-serif',
+                    height: 25,
+                    cursor: "pointer",
                   }}
-                >
-                  TCanteen
-                </Typography>
+                  onClick={() => navigate("/")}
+                />
               </Box>
               <Typography
                 variant="body2"
@@ -116,7 +116,6 @@ export default function Footer() {
             </Box>
           </Grid>
 
-          {/* Quick Links */}
           <Grid item xs={12} sm={4} md={2}>
             <Typography
               variant="h6"
@@ -151,7 +150,6 @@ export default function Footer() {
             </Stack>
           </Grid>
 
-          {/* Services */}
           <Grid item xs={12} sm={4} md={2}>
             <Typography
               variant="h6"
@@ -163,7 +161,7 @@ export default function Footer() {
             >
               Services
             </Typography>
-            <Stack spacing={1.5}>
+            <Stack spacing={1.5} sx={{width: "100px" }}>
               {footerLinks.services.map((link) => (
                 <Link
                   key={link.label}
@@ -186,7 +184,6 @@ export default function Footer() {
             </Stack>
           </Grid>
 
-          {/* Contact Info */}
           <Grid item xs={12} sm={4} md={4}>
             <Typography
               variant="h6"
@@ -228,7 +225,6 @@ export default function Footer() {
           </Grid>
         </Grid>
 
-        {/* Divider */}
         <Divider
           sx={{
             my: 4,
@@ -236,7 +232,6 @@ export default function Footer() {
           }}
         />
 
-        {/* Bottom Section */}
         <Box
           sx={{
             display: "flex",
@@ -292,19 +287,6 @@ export default function Footer() {
               </React.Fragment>
             ))}
           </Stack>
-        </Box>
-
-        {/* Made with love section */}
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Typography
-            variant="body2"
-            sx={{
-              opacity: 0.7,
-              fontSize: "0.85rem",
-            }}
-          >
-            Made with ❤️ for food lovers
-          </Typography>
         </Box>
       </Container>
     </Box>

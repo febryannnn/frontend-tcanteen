@@ -22,6 +22,7 @@ import OrderDetailDialog from "./MenuDetailsAdmin";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../components/UserContext";
+import AddMenu from "./AddMenuDialog";
 
 export default function MenuCardAdmin() {
   const [menuItems, setMenuItems] = useState([]);
@@ -75,13 +76,13 @@ export default function MenuCardAdmin() {
     try {
       await api.delete(`/admin/menus/${item_id}`, {
         headers: {
-            Authorization: `bearer ${token}`,
-          },
+          Authorization: `bearer ${token}`,
+        },
       });
     } catch (error) {
-      alert(error)
+      alert(error);
     }
-  }
+  };
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -145,6 +146,43 @@ export default function MenuCardAdmin() {
   return (
     <>
       <Container maxWidth="xl" sx={{ mb: 8 }}>
+        <AddMenu
+          open={open}
+          onClose={() => setOpen(false)}
+          onSuccess={() => window.location.reload()}
+        />
+
+        {/* Header dan Tombol Tambah Menu */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700, fontFamily: "Inter, sans-serif" }}
+          >
+            Daftar Menu
+          </Typography>
+
+          <Button
+            variant="contained"
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              background: "linear-gradient(45deg, #050163ff, #2c96c1ff)",
+            }}
+            onClick={() => setOpen(true)}
+          >
+            + Add New Menu
+          </Button>
+        </Box>
+
         {/* Category Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 4 }}>
           <Tabs

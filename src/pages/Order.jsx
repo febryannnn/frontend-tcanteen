@@ -45,12 +45,22 @@ export default function DashboardOrders() {
     open: false,
     message: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cartCount, setCartCount] = useState(0);
+  const [openChart, setOpenChart] = useState(false);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
   console.log(user);
 
-  const requestCancel = async (item_id) => {};
+    const handleAuthNav = (type) => {
+      if (type === "login") {
+        navigate("/login");
+      } else if (type === "register") {
+        navigate("/register");
+      }
+    };
+    
   // Fetch orders
   useEffect(() => {
     const fetchOrders = async () => {
@@ -175,7 +185,14 @@ export default function DashboardOrders() {
         minHeight: "100vh",
       }}
     >
-      <Navbar />
+      <Navbar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        cartCount={cartCount}
+        openCart={openChart}
+        setOpenCart={setOpenChart}
+        handleAuthNav={handleAuthNav}
+      />
       {/* Header */}
       <Box sx={{ mb: 4, mt: 10 }}>
         <Typography

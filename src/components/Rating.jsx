@@ -12,7 +12,7 @@ import {
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { keyframes } from "@mui/system";
 
-// Data dummy reviews
+// Dummy reviews data
 const reviewsData = [
   {
     id: 1,
@@ -20,9 +20,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=12",
     rating: 5,
     verified: true,
-    comment:
-      "Makanannya enak banget! Nasi gorengnya pas bumbunya, tidak terlalu asin. Porsinya juga besar, worth it!",
-    foodOrdered: "Nasi Goreng Spesial",
+    comment: "The food is really delicious! The fried rice has perfect seasoning, not too salty. The portion is also large, worth it!",
+    foodOrdered: "Special Fried Rice",
   },
   {
     id: 2,
@@ -30,8 +29,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=45",
     rating: 4,
     verified: true,
-    comment: "Sate ayamnya juicy dan bumbunya meresap sempurna.",
-    foodOrdered: "Sate Ayam Madura",
+    comment: "The chicken satay is juicy and the marinade is perfectly absorbed.",
+    foodOrdered: "Madura Chicken Satay",
   },
   {
     id: 3,
@@ -39,9 +38,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=33",
     rating: 5,
     verified: false,
-    comment:
-      "Rendangnya mantap! Dagingnya empuk banget dan bumbunya kaya rempah. Ini rendang terbaik!",
-    foodOrdered: "Rendang Sapi",
+    comment: "The rendang is awesome! The meat is very tender and the spices are rich. This is the best rendang!",
+    foodOrdered: "Beef Rendang",
   },
   {
     id: 4,
@@ -49,8 +47,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=47",
     rating: 4.5,
     verified: true,
-    comment: "Tempatnya bersih, pelayanannya ramah. Makanannya fresh dan enak.",
-    foodOrdered: "Gado-gado Jakarta",
+    comment: "The place is clean, the service is friendly. The food is fresh and delicious.",
+    foodOrdered: "Jakarta Gado-gado",
   },
   {
     id: 5,
@@ -58,8 +56,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=15",
     rating: 3.5,
     verified: false,
-    comment: "Rasanya lumayan enak, tapi porsinya agak kurang untuk saya.",
-    foodOrdered: "Mie Goreng Jawa",
+    comment: "The taste is quite good, but the portion is a bit small for me.",
+    foodOrdered: "Javanese Fried Noodles",
   },
   {
     id: 6,
@@ -67,9 +65,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=23",
     rating: 5,
     verified: true,
-    comment:
-      "Pelayanannya cepat dan ramah. Makanannya selalu konsisten enaknya. Highly recommended!",
-    foodOrdered: "Ayam Geprek",
+    comment: "The service is fast and friendly. The food is always consistently delicious. Highly recommended!",
+    foodOrdered: "Smashed Fried Chicken",
   },
   {
     id: 7,
@@ -77,8 +74,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=8",
     rating: 4,
     verified: true,
-    comment: "Enak dan harganya terjangkau!",
-    foodOrdered: "Soto Ayam",
+    comment: "Delicious and affordable price!",
+    foodOrdered: "Chicken Soto Soup",
   },
   {
     id: 8,
@@ -86,8 +83,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=28",
     rating: 5,
     verified: false,
-    comment: "Baksonya gede-gede dan kuahnya gurih. Mantap pokoknya!",
-    foodOrdered: "Bakso Jumbo",
+    comment: "The meatballs are huge and the broth is savory. Absolutely awesome!",
+    foodOrdered: "Jumbo Meatballs",
   },
   {
     id: 9,
@@ -95,8 +92,8 @@ const reviewsData = [
     avatar: "https://i.pravatar.cc/150?img=52",
     rating: 4.5,
     verified: true,
-    comment: "Pelayanan cepat, rasa juara. Pasti balik lagi.",
-    foodOrdered: "Nasi Uduk",
+    comment: "Fast service, champion taste. Definitely coming back again.",
+    foodOrdered: "Coconut Rice Platter",
   },
 ];
 
@@ -127,14 +124,7 @@ const scrollRight = keyframes`
 `;
 
 const cardColors = [
-  "linear-gradient(45deg, #A8E6CF, #DCEDC1)",
-  "linear-gradient(45deg, #FFD3B6, #FFAAA5)",
-  "linear-gradient(45deg, #A0E7E5, #B4F8C8)",
-  "linear-gradient(45deg, #FBE7C6, #FFDAC1)",
-  "linear-gradient(45deg, #B3EBF2, #E8F0F2)",
-  "linear-gradient(45deg, #D4A5A5, #EFD9D1)",
-  "linear-gradient(45deg, #C8E6C9, #DCEDC8)",
-  "linear-gradient(45deg, #FFECB3, #FFE082)",
+  "#b4e2ff38",
 ];
 
 const ReviewCard = ({ review }) => {
