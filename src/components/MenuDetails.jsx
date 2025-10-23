@@ -13,6 +13,8 @@ import {
   CardMedia,
   Snackbar,
   Alert,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -22,8 +24,18 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 import api from "../../services/api";
 
-export default function OrderDetailDialog({ open, onClose, item, setCartCount, cartItems, setCartItems }) {
+export default function OrderDetailDialog({
+  open,
+  onClose,
+  item,
+  setCartCount,
+  cartItems,
+  setCartItems,
+}) {
   console.log(item);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width:480px)");
 
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState("");
@@ -31,8 +43,6 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => quantity > 1 && setQuantity((q) => q - 1);
   const formatPrice = (price) => `Rp ${price.toLocaleString("id-ID")}`;
-  // const [cartItems, setCartItems] = useState([]);
-  // const [cartCount, setCartCount] = useState(0);
   const [errorNotif, setErrorNotif] = useState({
     open: false,
     message: "",
@@ -70,7 +80,7 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
     } catch (err) {
       setErrorNotif({
         open: true,
-        message: `${err.response?.data?.message || err.message}`
+        message: `${err.response?.data?.message || err.message}`,
       });
       console.error("Error adding to cart:", err.response?.data || err);
     }
@@ -82,9 +92,14 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      fullScreen={isMobile}
       scroll="paper"
       PaperProps={{
-        sx: { borderRadius: 1, overflow: "hidden" },
+        sx: {
+          borderRadius: isMobile ? 0 : 1,
+          overflow: "hidden",
+          margin: isMobile ? 0 : 2,
+        },
       }}
     >
       <DialogContent sx={{ p: 0, overflow: "hidden" }}>
@@ -92,7 +107,7 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
-            height: { md: 500 },
+            height: isMobile ? "100vh" : { md: 500 },
             overflow: "auto",
           }}
         >
@@ -100,12 +115,14 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
           <Box
             sx={{
               width: { xs: "100%", md: "45%" },
+              height: isMobile ? "250px" : "auto",
               backgroundColor: "grey.100",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               position: "relative",
               fontSize: "10rem",
+              flexShrink: 0,
             }}
           >
             <CardMedia
@@ -114,6 +131,7 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
               alt={item.name}
               sx={{
                 height: "100%",
+                width: "100%",
                 objectFit: "cover",
               }}
             />
@@ -122,28 +140,34 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
               onClick={onClose}
               sx={{
                 position: "absolute",
-                top: 12,
-                left: 12,
+                top: isMobile ? 8 : 12,
+                left: isMobile ? 8 : 12,
                 backgroundColor: "white",
+                width: isMobile ? 36 : 40,
+                height: isMobile ? 36 : 40,
                 "&:hover": { backgroundColor: "grey.100" },
               }}
             >
-              <CloseIcon />
+              <CloseIcon fontSize={isMobile ? "small" : "medium"} />
             </IconButton>
             <IconButton
               onClick={() => setIsFavorite(!isFavorite)}
               sx={{
                 position: "absolute",
-                top: 12,
-                right: 12,
+                top: isMobile ? 8 : 12,
+                right: isMobile ? 8 : 12,
                 backgroundColor: "white",
+                width: isMobile ? 36 : 40,
+                height: isMobile ? 36 : 40,
                 "&:hover": { backgroundColor: "grey.100" },
               }}
             >
               {isFavorite ? (
-                <FavoriteIcon sx={{ color: "red" }} />
+                <FavoriteIcon
+                  sx={{ color: "red", fontSize: isMobile ? "small" : "medium" }}
+                />
               ) : (
-                <FavoriteBorderIcon />
+                <FavoriteBorderIcon fontSize={isMobile ? "small" : "medium"} />
               )}
             </IconButton>
           </Box>
@@ -152,8 +176,10 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
           <Box
             sx={{
               flex: 1,
-              p: 4,
+              p: isMobile ? 2 : 4,
               overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
               scrollbarWidth: "none", // Firefox
               "&::-webkit-scrollbar": {
                 display: "none", // Chrome, Edge, Safari
@@ -162,23 +188,44 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
           >
             {/* HEADER */}
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+                sx={{ fontWeight: 700 }}
+              >
                 {item.name}
               </Typography>
               <Box
-                sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: isMobile ? 0.5 : 1,
+                  mt: 1,
+                  flexWrap: "wrap",
+                }}
               >
                 <Typography
                   variant="body2"
-                  sx={{ color: "warning.main", fontWeight: 600 }}
+                  sx={{
+                    color: "warning.main",
+                    fontWeight: 600,
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  }}
                 >
                   ⭐ 4.5/5.0
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: isMobile ? "0.75rem" : "0.875rem" }}
+                >
                   ({item.reviews} reviews)
                 </Typography>
                 <Divider orientation="vertical" flexItem />
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: isMobile ? "0.75rem" : "0.875rem" }}
+                >
                   🕐 10-15 Minutes
                 </Typography>
               </Box>
@@ -186,27 +233,43 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
                 label="available"
                 color="success"
                 size="small"
-                sx={{ mt: 1, fontWeight: 600 }}
+                sx={{
+                  mt: 1,
+                  fontWeight: 600,
+                  height: isMobile ? 24 : 32,
+                  fontSize: isMobile ? "0.7rem" : "0.8125rem",
+                }}
               />
             </Box>
 
             <Typography
-              variant="h5"
+              variant={isMobile ? "h6" : "h5"}
               sx={{ fontWeight: 700, color: "primary.main", mb: 2 }}
             >
               {formatPrice(item.price)}
             </Typography>
 
             <Typography
-              variant="body1"
+              variant="body2"
               color="text.secondary"
-              sx={{ mb: 3, lineHeight: 1.6 }}
+              sx={{
+                mb: 3,
+                lineHeight: 1.6,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
             >
               {item.description}
             </Typography>
 
             {/* QUANTITY */}
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: 600,
+                mb: 1,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
+            >
               Quantity
             </Typography>
             <Paper
@@ -219,32 +282,51 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
                 mb: 3,
               }}
             >
-              <IconButton onClick={handleDecrement} disabled={quantity <= 1}>
-                <RemoveIcon />
+              <IconButton
+                onClick={handleDecrement}
+                disabled={quantity <= 1}
+                size={isMobile ? "small" : "medium"}
+              >
+                <RemoveIcon fontSize={isMobile ? "small" : "medium"} />
               </IconButton>
-              <Typography variant="h6" sx={{ px: 2 }}>
+              <Typography
+                variant={isMobile ? "body1" : "h6"}
+                sx={{ px: isMobile ? 1.5 : 2 }}
+              >
                 {quantity}
               </Typography>
-              <IconButton onClick={handleIncrement}>
-                <AddIcon />
+              <IconButton
+                onClick={handleIncrement}
+                size={isMobile ? "small" : "medium"}
+              >
+                <AddIcon fontSize={isMobile ? "small" : "medium"} />
               </IconButton>
             </Paper>
 
             {/* NOTES */}
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: 600,
+                mb: 1,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
+            >
               Special Notes (Optional)
             </Typography>
             <TextField
               fullWidth
               multiline
-              rows={2}
+              rows={isMobile ? 2 : 2}
               placeholder="Add any special requests..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               variant="outlined"
+              size={isMobile ? "small" : "medium"}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "grey.50",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
                 },
               }}
             />
@@ -255,14 +337,18 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mt: 3,
+                mt: isMobile ? 2 : 3,
+                mb: isMobile ? 1 : 0,
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              <Typography
+                variant={isMobile ? "subtitle1" : "h6"}
+                sx={{ fontWeight: 700 }}
+              >
                 Total
               </Typography>
               <Typography
-                variant="h5"
+                variant={isMobile ? "h6" : "h5"}
                 sx={{ fontWeight: 700, color: "primary.main" }}
               >
                 {formatPrice(totalPrice)}
@@ -273,12 +359,17 @@ export default function OrderDetailDialog({ open, onClose, item, setCartCount, c
             <Button
               variant="contained"
               fullWidth
-              startIcon={<ShoppingCartIcon />}
-              sx={{ mt: 3, py: 1.2, fontWeight: 600, fontSize: "1rem" }}
+              startIcon={
+                <ShoppingCartIcon fontSize={isMobile ? "small" : "medium"} />
+              }
+              sx={{
+                mt: isMobile ? 2 : 3,
+                py: isMobile ? 1 : 1.2,
+                fontWeight: 600,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
               onClick={() => {
                 handleAddToCart(item.id);
-                // alert(`${item.name} (${quantity}) added to cart`);
-                // onClose();
               }}
             >
               Add to Cart

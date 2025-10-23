@@ -21,6 +21,7 @@ import {
   Alert,
   ThemeProvider,
   createTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   ExpandMore,
@@ -71,6 +72,8 @@ const theme = createTheme({
 
 export default function DashboardOrders() {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width:480px)");
+
   const [orders, setOrders] = useState([]);
   const [expanded, setExpanded] = useState(null);
   const [tabValue, setTabValue] = useState("Pending");
@@ -120,7 +123,6 @@ export default function DashboardOrders() {
       if (Array.isArray(res.data.data)) {
         const newOrders = res.data.data;
 
-        // Deteksi perubahan status
         newOrders.forEach((order) => {
           const oldStatus = prevStatuses[order.id];
           if (oldStatus && oldStatus !== order.status) {
@@ -131,7 +133,6 @@ export default function DashboardOrders() {
           }
         });
 
-        // Update state orders & prevStatuses
         setOrders(newOrders);
 
         const updatedStatusMap = {};
@@ -163,6 +164,7 @@ export default function DashboardOrders() {
     setAnchorEl(null);
     setSelectedOrder(null);
   };
+
   const handleStatusChange = async (newStatus) => {
     if (!selectedOrder) return;
 
@@ -232,7 +234,7 @@ export default function DashboardOrders() {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("id-ID", {
       day: "2-digit",
-      month: "long",
+      month: isMobile ? "short" : "long",
       year: "numeric",
     }).format(date);
   };
@@ -249,7 +251,7 @@ export default function DashboardOrders() {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          p: 3,
+          p: isMobile ? 2 : 3,
           width: "100vw",
           bgcolor: "#f8f9fa",
           minHeight: "100vh",
@@ -263,10 +265,10 @@ export default function DashboardOrders() {
           setOpenCart={setOpenChart}
           handleAuthNav={handleAuthNav}
         />
-        {/* Header */}
-        <Box sx={{ mb: 4, mt: 10 }}>
+
+        <Box sx={{ mb: isMobile ? 3 : 4, mt: isMobile ? 8 : 10 }}>
           <Typography
-            variant="h4"
+            variant={isMobile ? "h5" : "h4"}
             sx={{
               fontWeight: 700,
               mb: 1,
@@ -281,18 +283,20 @@ export default function DashboardOrders() {
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ fontFamily: "Inter, sans-serif" }}
+            sx={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: isMobile ? "0.8rem" : "0.875rem",
+            }}
           >
             Kelola dan pantau semua pesanan
           </Typography>
         </Box>
 
-        {/* Tabs */}
         <Paper
           elevation={0}
           sx={{
             mb: 3,
-            borderRadius: 3,
+            borderRadius: isMobile ? 2 : 3,
             overflow: "hidden",
             border: "1px solid",
             borderColor: alpha("#000", 0.08),
@@ -303,13 +307,17 @@ export default function DashboardOrders() {
             onChange={(e, val) => setTabValue(val)}
             textColor="primary"
             indicatorColor="primary"
+            variant={isMobile ? "scrollable" : "fullWidth"}
+            scrollButtons={isMobile ? "auto" : false}
             sx={{
               "& .MuiTab-root": {
                 fontWeight: 600,
                 fontFamily: "Inter, sans-serif",
                 textTransform: "none",
-                fontSize: "15px",
-                minHeight: 56,
+                fontSize: isMobile ? "0.75rem" : "15px",
+                minHeight: isMobile ? 48 : 56,
+                minWidth: isMobile ? 90 : "auto",
+                px: isMobile ? 1 : 2,
                 transition: "all 0.3s ease",
                 "&:hover": {
                   bgcolor: alpha("#2196f3", 0.04),
@@ -325,25 +333,31 @@ export default function DashboardOrders() {
             }}
           >
             <Tab
-              icon={<Schedule sx={{ fontSize: 20, mb: 0.5 }} />}
+              icon={<Schedule sx={{ fontSize: isMobile ? 16 : 20, mb: 0.5 }} />}
               iconPosition="start"
               label="Pending"
               value="Pending"
             />
             <Tab
-              icon={<LocalShipping sx={{ fontSize: 20, mb: 0.5 }} />}
+              icon={
+                <LocalShipping sx={{ fontSize: isMobile ? 16 : 20, mb: 0.5 }} />
+              }
               iconPosition="start"
               label="Processing"
               value="Processing"
             />
             <Tab
-              icon={<CheckCircle sx={{ fontSize: 20, mb: 0.5 }} />}
+              icon={
+                <CheckCircle sx={{ fontSize: isMobile ? 16 : 20, mb: 0.5 }} />
+              }
               iconPosition="start"
               label="Completed"
               value="Completed"
             />
             <Tab
-              icon={<HighlightOff sx={{ fontSize: 20, mb: 0.5 }} />}
+              icon={
+                <HighlightOff sx={{ fontSize: isMobile ? 16 : 20, mb: 0.5 }} />
+              }
               iconPosition="start"
               label="Cancelled"
               value="Cancelled"
@@ -351,24 +365,27 @@ export default function DashboardOrders() {
           </Tabs>
         </Paper>
 
-        {/* Order List */}
         <Fade in timeout={400}>
           <Box>
             {filteredOrders.length === 0 ? (
               <Paper
                 sx={{
-                  p: 6,
+                  p: isMobile ? 4 : 6,
                   textAlign: "center",
-                  borderRadius: 3,
+                  borderRadius: isMobile ? 2 : 3,
                   border: "1px dashed",
                   borderColor: alpha("#000", 0.12),
                 }}
               >
                 <ShoppingBag
-                  sx={{ fontSize: 64, color: "text.disabled", mb: 2 }}
+                  sx={{
+                    fontSize: isMobile ? 48 : 64,
+                    color: "text.disabled",
+                    mb: 2,
+                  }}
                 />
                 <Typography
-                  variant="h6"
+                  variant={isMobile ? "body1" : "h6"}
                   color="text.secondary"
                   sx={{ fontFamily: "Inter, sans-serif" }}
                 >
@@ -385,42 +402,53 @@ export default function DashboardOrders() {
                     key={order.id}
                     sx={{
                       mb: 2,
-                      borderRadius: 3,
+                      borderRadius: isMobile ? 2 : 3,
                       border: "1px solid",
                       borderColor: alpha("#000", 0.08),
                       transition: "all 0.3s ease",
                       overflow: "hidden",
                       "&:hover": {
                         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                        transform: "translateY(-2px)",
+                        transform: isMobile ? "none" : "translateY(-2px)",
                         borderColor: alpha(statusConfig.color, 0.3),
                       },
                     }}
                   >
-                    <CardContent sx={{ p: 3 }}>
-                      {/* Header Preview */}
+                    <CardContent sx={{ p: isMobile ? 2 : 3 }}>
                       <Box
                         display="flex"
-                        alignItems="center"
+                        alignItems="flex-start"
                         justifyContent="space-between"
+                        flexDirection={isMobile ? "column" : "row"}
+                        gap={isMobile ? 2 : 0}
                         sx={{ cursor: "pointer" }}
                         onClick={() => handleExpand(order.id)}
                       >
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: isMobile ? 1.5 : 2,
+                            width: isMobile ? "100%" : "auto",
+                          }}
                         >
                           <Avatar
                             sx={{
                               bgcolor: statusConfig.bgcolor,
-                              width: 48,
-                              height: 48,
+                              width: isMobile ? 40 : 48,
+                              height: isMobile ? 40 : 48,
                             }}
                           >
-                            <StatusIcon sx={{ color: statusConfig.color }} />
+                            <StatusIcon
+                              sx={{
+                                color: statusConfig.color,
+                                fontSize: isMobile ? 20 : 24,
+                              }}
+                            />
                           </Avatar>
-                          <Box>
+                          <Box sx={{ flex: 1 }}>
                             <Typography
-                              variant="h6"
+                              variant={isMobile ? "subtitle1" : "h6"}
                               sx={{
                                 fontWeight: 700,
                                 fontFamily: "Inter, sans-serif",
@@ -433,7 +461,7 @@ export default function DashboardOrders() {
                               sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 2,
+                                gap: isMobile ? 1 : 2,
                                 flexWrap: "wrap",
                               }}
                             >
@@ -445,12 +473,18 @@ export default function DashboardOrders() {
                                 }}
                               >
                                 <Person
-                                  sx={{ fontSize: 16, color: "text.secondary" }}
+                                  sx={{
+                                    fontSize: isMobile ? 14 : 16,
+                                    color: "text.secondary",
+                                  }}
                                 />
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
-                                  sx={{ fontFamily: "Inter, sans-serif" }}
+                                  sx={{
+                                    fontFamily: "Inter, sans-serif",
+                                    fontSize: isMobile ? "0.7rem" : "0.875rem",
+                                  }}
                                 >
                                   {user.name || "Tanpa Nama"}
                                 </Typography>
@@ -463,12 +497,18 @@ export default function DashboardOrders() {
                                 }}
                               >
                                 <CalendarToday
-                                  sx={{ fontSize: 14, color: "text.secondary" }}
+                                  sx={{
+                                    fontSize: isMobile ? 12 : 14,
+                                    color: "text.secondary",
+                                  }}
                                 />
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
-                                  sx={{ fontFamily: "Inter, sans-serif" }}
+                                  sx={{
+                                    fontFamily: "Inter, sans-serif",
+                                    fontSize: isMobile ? "0.7rem" : "0.875rem",
+                                  }}
                                 >
                                   {formatDate(order.created_at)}
                                 </Typography>
@@ -481,12 +521,18 @@ export default function DashboardOrders() {
                                 }}
                               >
                                 <AccessTime
-                                  sx={{ fontSize: 14, color: "text.secondary" }}
+                                  sx={{
+                                    fontSize: isMobile ? 12 : 14,
+                                    color: "text.secondary",
+                                  }}
                                 />
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
-                                  sx={{ fontFamily: "Inter, sans-serif" }}
+                                  sx={{
+                                    fontFamily: "Inter, sans-serif",
+                                    fontSize: isMobile ? "0.7rem" : "0.875rem",
+                                  }}
                                 >
                                   {formatTime(order.created_at)}
                                 </Typography>
@@ -497,19 +543,28 @@ export default function DashboardOrders() {
 
                         <Stack
                           direction="row"
-                          spacing={1.5}
+                          spacing={isMobile ? 1 : 1.5}
                           alignItems="center"
+                          sx={{
+                            width: isMobile ? "100%" : "auto",
+                            justifyContent: isMobile
+                              ? "space-between"
+                              : "flex-start",
+                          }}
                         >
-                          <Box sx={{ textAlign: "right" }}>
+                          <Box sx={{ textAlign: isMobile ? "left" : "right" }}>
                             <Typography
                               variant="caption"
                               color="text.secondary"
-                              sx={{ fontFamily: "Inter, sans-serif" }}
+                              sx={{
+                                fontFamily: "Inter, sans-serif",
+                                fontSize: isMobile ? "0.65rem" : "0.75rem",
+                              }}
                             >
                               Total
                             </Typography>
                             <Typography
-                              variant="h6"
+                              variant={isMobile ? "subtitle1" : "h6"}
                               sx={{
                                 fontWeight: 700,
                                 color: statusConfig.color,
@@ -521,13 +576,19 @@ export default function DashboardOrders() {
                           </Box>
 
                           <Chip
-                            icon={<StatusIcon sx={{ fontSize: 18 }} />}
+                            icon={
+                              <StatusIcon
+                                sx={{ fontSize: isMobile ? 14 : 18 }}
+                              />
+                            }
                             label={statusConfig.label}
+                            size={isMobile ? "small" : "medium"}
                             sx={{
                               bgcolor: statusConfig.bgcolor,
                               color: statusConfig.color,
                               fontWeight: 600,
                               fontFamily: "Inter, sans-serif",
+                              fontSize: isMobile ? "0.7rem" : "0.8125rem",
                               border: `1px solid ${alpha(
                                 statusConfig.color,
                                 0.3
@@ -538,48 +599,54 @@ export default function DashboardOrders() {
                             }}
                           />
 
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusMenuOpen(e, order);
-                            }}
-                            sx={{
-                              bgcolor: alpha("#000", 0.04),
-                              "&:hover": { bgcolor: alpha("#000", 0.08) },
-                            }}
-                          >
-                            <MoreVert fontSize="small" />
-                          </IconButton>
-
-                          <IconButton
-                            sx={{
-                              bgcolor: alpha("#000", 0.04),
-                              transition: "all 0.3s ease",
-                              "&:hover": { bgcolor: alpha("#000", 0.08) },
-                            }}
-                          >
-                            <ExpandMore
-                              sx={{
-                                transform:
-                                  expanded === order.id
-                                    ? "rotate(180deg)"
-                                    : "rotate(0deg)",
-                                transition: "transform 0.3s ease",
+                          <Box sx={{ display: "flex", gap: 0.5 }}>
+                            <IconButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatusMenuOpen(e, order);
                               }}
-                            />
-                          </IconButton>
+                              size={isMobile ? "small" : "medium"}
+                              sx={{
+                                bgcolor: alpha("#000", 0.04),
+                                "&:hover": { bgcolor: alpha("#000", 0.08) },
+                              }}
+                            >
+                              <MoreVert
+                                fontSize={isMobile ? "small" : "medium"}
+                              />
+                            </IconButton>
+
+                            <IconButton
+                              size={isMobile ? "small" : "medium"}
+                              sx={{
+                                bgcolor: alpha("#000", 0.04),
+                                transition: "all 0.3s ease",
+                                "&:hover": { bgcolor: alpha("#000", 0.08) },
+                              }}
+                            >
+                              <ExpandMore
+                                fontSize={isMobile ? "small" : "medium"}
+                                sx={{
+                                  transform:
+                                    expanded === order.id
+                                      ? "rotate(180deg)"
+                                      : "rotate(0deg)",
+                                  transition: "transform 0.3s ease",
+                                }}
+                              />
+                            </IconButton>
+                          </Box>
                         </Stack>
                       </Box>
 
-                      {/* Expand Section */}
                       <Collapse in={expanded === order.id} timeout="auto">
-                        <Divider sx={{ my: 2.5 }} />
+                        <Divider sx={{ my: isMobile ? 2 : 2.5 }} />
 
                         <Box
                           sx={{
                             bgcolor: alpha("#000", 0.02),
-                            borderRadius: 2,
-                            p: 2,
+                            borderRadius: isMobile ? 1.5 : 2,
+                            p: isMobile ? 1.5 : 2,
                           }}
                         >
                           <Typography
@@ -589,22 +656,23 @@ export default function DashboardOrders() {
                               fontWeight: 600,
                               fontFamily: "Inter, sans-serif",
                               color: "text.secondary",
+                              fontSize: isMobile ? "0.8rem" : "0.875rem",
                             }}
                           >
                             Items Pesanan ({order.menus?.length || 0})
                           </Typography>
 
-                          <Stack spacing={1.5}>
+                          <Stack spacing={isMobile ? 1 : 1.5}>
                             {order.menus?.map((menu, i) => (
                               <Box
                                 key={i}
                                 sx={{
                                   display: "flex",
                                   alignItems: "center",
-                                  gap: 2,
-                                  p: 1.5,
+                                  gap: isMobile ? 1.5 : 2,
+                                  p: isMobile ? 1 : 1.5,
                                   bgcolor: "white",
-                                  borderRadius: 2,
+                                  borderRadius: isMobile ? 1.5 : 2,
                                   transition: "all 0.2s ease",
                                   "&:hover": {
                                     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
@@ -616,17 +684,25 @@ export default function DashboardOrders() {
                                   alt={menu.name}
                                   variant="rounded"
                                   sx={{
-                                    width: 60,
-                                    height: 60,
+                                    width: isMobile ? 50 : 60,
+                                    height: isMobile ? 50 : 60,
                                     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                                   }}
                                 />
-                                <Box sx={{ flex: 1 }}>
+                                <Box sx={{ flex: 1, minWidth: 0 }}>
                                   <Typography
                                     sx={{
                                       fontWeight: 600,
                                       fontFamily: "Inter, sans-serif",
                                       mb: 0.5,
+                                      fontSize: isMobile ? "0.85rem" : "1rem",
+                                      whiteSpace: isMobile
+                                        ? "nowrap"
+                                        : "normal",
+                                      overflow: isMobile ? "hidden" : "visible",
+                                      textOverflow: isMobile
+                                        ? "ellipsis"
+                                        : "clip",
                                     }}
                                   >
                                     {menu.name}
@@ -634,7 +710,12 @@ export default function DashboardOrders() {
                                   <Typography
                                     variant="body2"
                                     color="text.secondary"
-                                    sx={{ fontFamily: "Inter, sans-serif" }}
+                                    sx={{
+                                      fontFamily: "Inter, sans-serif",
+                                      fontSize: isMobile
+                                        ? "0.7rem"
+                                        : "0.875rem",
+                                    }}
                                   >
                                     {menu.pivot?.quantity}x @ Rp{" "}
                                     {menu.pivot?.unit_price.toLocaleString(
@@ -647,6 +728,8 @@ export default function DashboardOrders() {
                                     fontWeight: 700,
                                     fontFamily: "Inter, sans-serif",
                                     color: statusConfig.color,
+                                    fontSize: isMobile ? "0.85rem" : "1rem",
+                                    whiteSpace: "nowrap",
                                   }}
                                 >
                                   Rp{" "}
@@ -667,7 +750,6 @@ export default function DashboardOrders() {
           </Box>
         </Fade>
 
-        {/* Status Change Menu */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
@@ -676,7 +758,7 @@ export default function DashboardOrders() {
             sx: {
               borderRadius: 2,
               mt: 1,
-              minWidth: 180,
+              minWidth: isMobile ? 160 : 180,
               boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
             },
           }}
@@ -685,13 +767,22 @@ export default function DashboardOrders() {
             onClick={() => handleStatusChange("cancelled")}
             sx={{
               fontFamily: "Inter, sans-serif",
+              fontSize: isMobile ? "0.85rem" : "1rem",
+              py: isMobile ? 1 : 1.5,
               "&:hover": { bgcolor: alpha("#990404ff", 0.08) },
             }}
           >
-            <Schedule sx={{ mr: 1.5, fontSize: 20, color: "#b00710ff" }} />
+            <Schedule
+              sx={{
+                mr: 1.5,
+                fontSize: isMobile ? 18 : 20,
+                color: "#b00710ff",
+              }}
+            />
             Cancel Order
           </MenuItem>
         </Menu>
+
         <Snackbar
           open={errorNotif.open}
           autoHideDuration={3000}
